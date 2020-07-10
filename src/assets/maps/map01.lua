@@ -1,0 +1,112 @@
+return {
+  version = "1.4",
+  luaversion = "5.1",
+  tiledversion = "1.4.1",
+  orientation = "orthogonal",
+  renderorder = "right-down",
+  width = 100,
+  height = 100,
+  tilewidth = 8,
+  tileheight = 8,
+  nextlayerid = 6,
+  nextobjectid = 1,
+  properties = {},
+  tilesets = {
+    {
+      name = "HUGE",
+      firstgid = 1,
+      tilewidth = 8,
+      tileheight = 8,
+      spacing = 0,
+      margin = 0,
+      columns = 82,
+      image = "../images/s4m_ur4i_huge-assetpack-tilemap.png",
+      imagewidth = 658,
+      imageheight = 892,
+      objectalignment = "unspecified",
+      tileoffset = {
+        x = 0,
+        y = 0
+      },
+      grid = {
+        orientation = "orthogonal",
+        width = 8,
+        height = 8
+      },
+      properties = {},
+      terrains = {},
+      tilecount = 9102,
+      tiles = {}
+    }
+  },
+  layers = {
+    {
+      type = "tilelayer",
+      x = 0,
+      y = 0,
+      width = 100,
+      height = 100,
+      id = 1,
+      name = "BackgroundColor",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      properties = {},
+      encoding = "base64",
+      compression = "zstd",
+      data = "KLUv/WBAmz0CAHKFDRawaQKkCCkyV9V1KJKklFIC5rnXvh58j3Nc4xi3OMUlDnGHM1wBIdzgBBc4wD3nXHPMLadcEgMAHRnQQcgml1r8ter0"
+    },
+    {
+      type = "tilelayer",
+      x = 0,
+      y = 0,
+      width = 100,
+      height = 100,
+      id = 2,
+      name = "floor",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      properties = {},
+      encoding = "base64",
+      compression = "zstd",
+      data = "KLUv/WBAm10GALJNJCpwTUABAMBZAAAAgIUWZd1IWpLJY//DBlsBwIEkKHnAhg0Grjuztun3zgMbFDLiZDbM9bFdinOBPJafyknjtDllnDQTn8QX8UF8D5+DXWwWo8wIs1m2kUvkArhMrs5VcpE0k61zYjhdTgsnhXfwGXwFH8E38AlMqZhCsSVsCCPLqHKdHNDwo/nBuDyujovj2jgTIECDSZNsA7kGHeIp6DgFGFNUr6RhiaoasBd4lv6tFnAhtZ1EZ3+xrEXWaBGqEPh2JMgL9nkb"
+    },
+    {
+      type = "tilelayer",
+      x = 0,
+      y = 0,
+      width = 100,
+      height = 100,
+      id = 4,
+      name = "Tile Layer 4",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      properties = {},
+      encoding = "base64",
+      compression = "zstd",
+      data = "KLUv/WBAm20PAMZycDLQWikIXBfWydzlcrkEBgYGBgaGXhfXT4CTv7gGBgYGBgaGLi/DMAzDMJHvbnuv6sWKB1cAWgBkAOfkNXlMb+kp4Xg3no1X49F4M56MF+PBeC+ei9fisXgrnoqX4qF4J56JV+IlPaR3dBJehAfhPXgOXoPH4C14Cl6CR/SGntALekDv5/m8nsfzdp7Oy3k4H+voInGNuERcIS4Q14fLw9XhMrqKiugauoSuoAvo+rl8rp6L59q5dK6cC+e6uWyu01XXrpqL5pq5ZK6YL8/L6/K4vC1Py8vysLwrz8qr8qi8pjflSXlRHpT3ZJ/q0z7VfKL5NPNJ5lPMJwSfYD4d+GTgU4FPBD4N+CTgU4BPAKpcVK6ma8ol5YpyQbmeXE6uJhfTtXQpXUyuJZeSK8mF5DpyGbmKXESuIS6uFheLa8Wl4kpxobhOXCauElfShTRhmpg+LX1S+sTk05JPSj4l+YTk05FPRj4V+UTk05BPQj4F+QTk049PPj71+MTj045POj7lSPqE9OnoE4lPIz6J+BTiE4hPHz55+NThk9Gnok8cPm34pOFThk8YPl34ZOFThU8UPk046XzK+YTz6eaTzadTCyDg9RyO+D6V1UNGo5qMRg1tRj0ZjRoZjXq0GWpkNFJPRjOpxiej3jM="
+    },
+    {
+      type = "tilelayer",
+      x = 0,
+      y = 0,
+      width = 100,
+      height = 100,
+      id = 3,
+      name = "Tile Layer 3",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      properties = {},
+      encoding = "base64",
+      compression = "zstd",
+      data = "KLUv/WBAm90MAHZnWTXwkgsK//9DqdYGVWBVAyQ0Y0Iz5v//R6nWBlVQVQMw8DADDzPwVVWlGxSobvDnfO+KDjznPU0ASQBJAJvKlrKhbCc9VjxWO1Y6VjlWOFY3VjZWNVY0Vk8rp1XTimm1tFJaJa2QKhSrEysTqxIrEqsRKxGrECsQqw8rn1XPime1s9JZ5axwVjcHTcZ2tBltRRvRNrQJbUEbkM/Ws/FsO5vOlrPhbDebh63DZrPVbDTbzCazxWww24tJ2CJsELYHm4OtwcZgW7Ap2BJsLlvLxrKtBCfzxXww38vH4dvwafgyfBi+C5+Fr8JH4ZtwLl/Lx/KtfCpfyofynXwIvgOfyVfykXwjn8gX8oF8H0+b09a0MW1Lm9KWtCFtMwYB/CyTV8mL5DXyEnmFvEBeHy8DrwIvAq8Br/W6l73US8ArwNFn9BV9RN/QJ/QFfUBfjA/G9/O9+Fx8LT4W34pPxZfC5qv5aL6ZAw4g0HuWAxkeeOi5oeuBzvUTF3gwjqimQFKjQFKPcaRGgaSeAqkaxpGop0CaVOMwUo8I2w=="
+    }
+  }
+}
