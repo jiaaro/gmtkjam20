@@ -2,6 +2,11 @@ require('joystick')
 anim8 = require 'anim8'
 sti = require('sti')
 
+PX_PER_METER = 16
+PLAYER_SPEED = 5 * PX_PER_METER
+JUMP_HEIGHT = 2 * PX_PER_METER
+
+
 local lg = love.graphics
 
 function getMapObjectByName(object_name)
@@ -43,16 +48,17 @@ function love.load()
 	world = love.physics.newWorld(0, 0)
   playerlayer = getMapLayerByName('Player')
   player = getMapObjectByName("Player")
-
+  player.speed = PLAYER_SPEED
+  player.jump_height = JUMP_HEIGHT
 	-- Prepare collision objects
 	--map:box2d_init(world)
 end
 
 function love.update(dt)
   if joystick:isDown(LEFT) then
-    player.x = player.x - 2
+    player.x = player.x - player.speed * dt
   elseif joystick:isDown(RIGHT) then
-    player.x = player.x + 2
+    player.x = player.x + player.speed * dt
   end
 
   map:update(dt)
