@@ -5,8 +5,9 @@ bump = require('bump')
 
 PX_PER_METER = 16
 PLAYER_SPEED = 5 * PX_PER_METER
-JUMP_HEIGHT = 2 * PX_PER_METER
+JUMP_HEIGHT = 2 * PX_PER_METER * 10
 
+CAN_JUMP = true
 
 local lg = love.graphics
 
@@ -32,7 +33,7 @@ function love.load()
 
   local dbg = require('emmy_core')
   dbg.tcpListen('localhost', 9966)
-  dbg.waitIDE()
+  --dbg.waitIDE()
 
   joysticks = love.joystick.getJoysticks()
   joystick = joysticks[1]
@@ -49,7 +50,14 @@ function love.load()
   player = getMapLayerByName('Player')
   player.speed = PLAYER_SPEED
   player.jump_height = JUMP_HEIGHT
-  player.velocity = {0, 0}
+  player.velocity = {x=0, y=0}
+  function player:jump()
+    if not CAN_JUMP then
+      return
+    end
+    self.velocity.y = -1 * JUMP_HEIGHT
+    CAN_JUMP = false
+  end
 
   world:add(player, 0, 0, 3*8, 4*8)
 
@@ -59,20 +67,36 @@ end
 
 function love.update(dt)
   if joystick and (joystick:isDown(LEFT) or joystick:getGamepadAxis("leftx") < -0.1) or love.keyboard.isDown('left', 'a') then
+    --player.velocity.x = math.min(PLAYER_SPEED, player.velocity.x - PLAYER_SPEED * dt)
     player.x = player.x - player.speed * dt
   elseif joystick and (joystick:isDown(RIGHT) or joystick:getGamepadAxis("leftx") > 0.1) or love.keyboard.isDown('right', 'd') then
     player.x = player.x + player.speed * dt
   end
 
-  player.velocity[2] = player.velocity[2] + PX_PER_METER * dt
-  player.x, player.y, cols, len = world:move(player, player.x + player.velocity[1], player.y + player.velocity[2])
+  player.velocity.y = player.velocity.y + PX_PER_METER
+  player.x, player.y, cols, len = world:move(
+      player,
+      player.x + player.velocity.x * dt,
+      player.y + player.velocity.y * dt
+  )
 
   for i = 1, len do
-    if cols[i].touch[1] > 0 then
-
+    if cols[i].touch.y > 0 then
+      CAN_JUMP = true
+      player.velocity.y = 0
     end
   end
   map:update(dt)
+end
+
+function love.gamepadpressed(js, button)
+  if js:getGUID() ~= joystick:getGUID() then
+    return
+  end
+
+  if button == 'a' then
+    player:jump()
+  end
 end
 
 function love.keypressed(key)
@@ -84,7 +108,9 @@ function love.keypressed(key)
     cmd = love.keyboard.isDown('lctrl', 'rctrl')
   end
 
-  if key == 'right' then
+  if key == 'space' then
+    player:jump()
+  elseif key == 'right' then
   elseif key == 'left' then
   elseif cmd and key == 'r' then
   end
