@@ -1,6 +1,7 @@
 require('joystick')
-anim8 = require 'anim8'
+anim8 = require('anim8')
 sti = require('sti')
+bump = require('bump')
 
 PX_PER_METER = 16
 PLAYER_SPEED = 5 * PX_PER_METER
@@ -40,17 +41,17 @@ function love.load()
 	love.physics.setMeter(16)
 
 	-- Load a map exported to Lua from Tiled
-	map = sti("assets/maps/map01.lua", { 'box2d' })
+	map = sti("assets/maps/map01.lua", { 'bump' })
   --spritesheet = lg.newImage('assets/images/s4m_ur4i_huge-assetpack-characters.png')
 
   -- Prepare physics world with horizontal and vertical gravity
-	world = love.physics.newWorld(0, 0)
+	world = bump.newWorld(16)
   playerlayer = getMapLayerByName('Player')
   player = getMapObjectByName("Player")
   player.speed = PLAYER_SPEED
   player.jump_height = JUMP_HEIGHT
 	-- Prepare collision objects
-	map:box2d_init(world)
+	map:bump_init(world)
 end
 
 function love.update(dt)
@@ -89,9 +90,9 @@ function love.draw()
   map:draw()
 
   -- Draw Collision Map (useful for debugging)
-	--love.graphics.setColor(1, 0, 0)
-	--map:box2d_draw()
+	love.graphics.setColor(1, 0, 0)
+	map:bump_draw(world)
 
 
-  --drawJoystickDebug()
+  drawJoystickDebug()
 end
