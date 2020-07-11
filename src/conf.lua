@@ -6,7 +6,7 @@ function love.conf(t)
 
   -- Mac
   t.window.width = 800
-  t.window.height = 480
+  t.window.height = 450
   t.window.resizable = false
 
   --t.window.resizable = true
