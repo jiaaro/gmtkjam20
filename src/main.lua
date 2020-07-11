@@ -4,6 +4,8 @@ sti = require('sti')
 bump = require('bump')
 lume = require("lume")
 
+projectile = require('projectile')
+
 PX_PER_METER = 16
 PLAYER_SPEED = 8 * PX_PER_METER
 JUMP_HEIGHT = 20 * PX_PER_METER
@@ -78,6 +80,8 @@ function love.load()
 
   -- Prepare collision objects
 	map:bump_init(world)
+
+  proj = Projectile(0, 0, 0, 0)
 end
 
 function love.update(dt)
@@ -141,7 +145,6 @@ function love.update(dt)
       player.y + 0.5*BLOCK
     )
   end
-  print(len)
   if len > 0 then
     pathline = {player.x, player.y + 0.5*BLOCK, items[1].x1, items[1].y1}
   else
@@ -217,4 +220,9 @@ function love.draw()
 
   --lg.setColor(1, 1, 1)
   --drawJoystickDebug()
+
+  if proj then
+    proj:draw()
+  end
 end
+
