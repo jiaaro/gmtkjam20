@@ -4,10 +4,8 @@ sti = require('sti')
 bump = require('bump')
 
 PX_PER_METER = 16
-PLAYER_SPEED = 5 * PX_PER_METER
+PLAYER_SPEED = 8 * PX_PER_METER
 JUMP_HEIGHT = 2 * PX_PER_METER * 10
-
-CAN_JUMP = true
 
 local lg = love.graphics
 
@@ -38,9 +36,6 @@ function love.load()
   joysticks = love.joystick.getJoysticks()
   joystick = joysticks[1]
 
-	-- Set world meter size (in pixels)
-	love.physics.setMeter(16)
-
 	-- Load a map exported to Lua from Tiled
 	map = sti("assets/maps/map01.lua", { 'bump' })
   --spritesheet = lg.newImage('assets/images/s4m_ur4i_huge-assetpack-characters.png')
@@ -52,12 +47,13 @@ function love.load()
   player.jump_height = JUMP_HEIGHT
   player.direction = 0
   player.velocity = {x=0, y=0}
+  player.can_jump = true
   function player:jump()
-    if not CAN_JUMP then
+    if not self.can_jump then
       return
     end
     self.velocity.y = -1 * JUMP_HEIGHT
-    CAN_JUMP = false
+    self.can_jump = false
   end
 
   world:add(player, 0, 0, 3*8, 4*8)
@@ -68,12 +64,9 @@ end
 
 function love.update(dt)
   if joystick and (joystick:isDown(LEFT) or joystick:getGamepadAxis("leftx") < -0.1) or love.keyboard.isDown('left', 'a') then
-    --player.velocity.x = math.min(PLAYER_SPEED, player.velocity.x - PLAYER_SPEED * dt)
-    player.direction = -1
-    player.x = player.x - player.speed * dt
+    player.velocity.x = math.max(-PLAYER_SPEED, player.velocity.x - (PLAYER_SPEED * .4))
   elseif joystick and (joystick:isDown(RIGHT) or joystick:getGamepadAxis("leftx") > 0.1) or love.keyboard.isDown('right', 'd') then
-    player.direction = 1
-    player.x = player.x + player.speed * dt
+    player.velocity.x = math.min(PLAYER_SPEED, player.velocity.x + (PLAYER_SPEED * .4))
   end
 
   player.velocity.y = player.velocity.y + PX_PER_METER
@@ -85,8 +78,9 @@ function love.update(dt)
 
   for i = 1, len do
     if cols[i].touch.y > 0 then
-      CAN_JUMP = true
+      player.can_jump = true
       player.velocity.y = 0
+      player.velocity.x = player.velocity.x * .7
     end
   end
   map:update(dt)
