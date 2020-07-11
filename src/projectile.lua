@@ -27,7 +27,7 @@ function Projectile:update(dt)
     self.ttl = self.ttl - dt
   else
     self.active = false
-    world.update(self, offscreen.x, offscreen.y)
+    world:update(self, offscreen.x, offscreen.y)
     self.x = offscreen.x
     self.y = offscreen.y
     self.velocity = {x = 0, y = 0}

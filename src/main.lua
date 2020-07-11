@@ -19,6 +19,7 @@ camera = {
 BLOCK = 8 -- pixels
 
 local lg = love.graphics
+local proj = nil
 
 function getMapObjectByName(object_name)
 	for k, object in pairs(_G.map.objects) do
@@ -139,9 +140,7 @@ function love.update(dt)
     proj:start(player.x, player.y, 200 * player.direction, 0)
     player.isShooting = false
   end
-  if proj.active then
-    proj:update(dt)
-  end
+  proj:update(dt)
 
 
   map:update(dt)
