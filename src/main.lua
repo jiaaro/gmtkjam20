@@ -106,6 +106,15 @@ function love.update(dt)
   end
 
   player.velocity.x = player.velocity.x * .95
+
+  -- do parallax
+  for i, layer in pairs(map.layers) do
+    if layer.properties.parallax then
+      local parallax = layer.properties.parallax or 1.0
+      layer.x = lume.round((1 - parallax) * camera.x)
+    end
+  end
+
   map:update(dt)
 
   local viewport_w = windowWidth / camera.scale
