@@ -64,9 +64,9 @@ end
 
 function love.update(dt)
   if joystick and (joystick:isDown(LEFT) or joystick:getGamepadAxis("leftx") < -0.1) or love.keyboard.isDown('left', 'a') then
-    player.velocity.x = math.max(-PLAYER_SPEED, player.velocity.x - (PLAYER_SPEED * .4))
+    player.velocity.x = math.max(-PLAYER_SPEED, player.velocity.x - (PLAYER_SPEED * .3))
   elseif joystick and (joystick:isDown(RIGHT) or joystick:getGamepadAxis("leftx") > 0.1) or love.keyboard.isDown('right', 'd') then
-    player.velocity.x = math.min(PLAYER_SPEED, player.velocity.x + (PLAYER_SPEED * .4))
+    player.velocity.x = math.min(PLAYER_SPEED, player.velocity.x + (PLAYER_SPEED * .3))
   end
 
   player.velocity.y = player.velocity.y + PX_PER_METER
@@ -79,7 +79,9 @@ function love.update(dt)
   for i = 1, len do
     if cols[i].touch.y > 0 then
       player.can_jump = true
-      player.velocity.y = 0
+      if player.velocity.y > 0 then
+        player.velocity.y = 0
+      end
       player.velocity.x = player.velocity.x * .7
     end
   end
