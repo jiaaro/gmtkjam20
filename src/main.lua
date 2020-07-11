@@ -122,8 +122,10 @@ function love.update(dt)
   local touchingLadder = false
   for i = 1, ctlen do
     local layer = currentlyTouching[i].other.layer
-    if layer and layer.name == 'ladder' then
+    if currentlyTouching[i].overlaps and layer and layer.name == 'ladder' then
       touchingLadder = true
+      player.velocity.x = 0
+      player.velocity.y = 0
     end
   end
 
@@ -170,9 +172,6 @@ function love.update(dt)
         player.velocity.y = 0
       end
       player.velocity.x = player.velocity.x * .7
-    elseif cols[i].other.layer and cols[i].other.layer.name == 'ladder' then
-      player.velocity.x = player.velocity.x * .2
-      player.velocity.y = player.velocity.y * .2
     end
   end
 
