@@ -29,7 +29,6 @@ function love.load()
   windowWidth  = lg.getWidth()
 	windowHeight = lg.getHeight()
 
-  package.cpath = package.cpath .. ';/Users/jiaaro/Library/Application Support/JetBrains/PyCharm2020.1/plugins/intellij-emmylua/classes/debugger/emmy/mac/?.dylib'
   local dbg = require('emmy_core')
   dbg.tcpListen('localhost', 9966)
   --dbg.waitIDE()
@@ -55,9 +54,9 @@ function love.load()
 end
 
 function love.update(dt)
-  if joystick:isDown(LEFT) then
+  if joystick and (joystick:isDown(LEFT) or joystick:getGamepadAxis("leftx") < -0.1) or love.keyboard.isDown('left', 'a') then
     player.x = player.x - player.speed * dt
-  elseif joystick:isDown(RIGHT) then
+  elseif joystick and (joystick:isDown(RIGHT) or joystick:getGamepadAxis("leftx") > 0.1) or love.keyboard.isDown('right', 'd') then
     player.x = player.x + player.speed * dt
   end
 
