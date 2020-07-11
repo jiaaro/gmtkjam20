@@ -3,6 +3,8 @@ Projectile = Object.extend(Object)
 
 local lg = love.graphics
 
+local offscreen = {x = -69, y = -69}
+
 function Projectile:new(x, y, w, h)
   self.x = x
   self.y = y
@@ -12,6 +14,7 @@ function Projectile:new(x, y, w, h)
   self.velocity = {x = 0, y = 0}
   self.cols = {}
   self.ttl = 0
+  world:add(self, 0, 0, 5, 5)
 end
 
 function Projectile:update(dt)
@@ -24,8 +27,10 @@ function Projectile:update(dt)
     self.ttl = self.ttl - dt
   else
     self.active = false
+    world.udpate(self, offscreen.x, offscreen.y)
+    self.x = offscreen.x
+    self.y = offscreen.y
     self.velocity = {x = 0, y = 0}
-    world:remove(self)
   end
 end
 
@@ -40,7 +45,7 @@ function Projectile:start(startX, startY, velocityX, velocityY)
   if self.active then
     return
   end
-  world:add(self, startX, startY, 3, 3)
+  world:update(self, startX, startY)
   self.x = startX
   self.y = startY
   self.velocity = {x = velocityX, y = velocityY}

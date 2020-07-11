@@ -78,6 +78,17 @@ function love.load()
   player.h = 2*BLOCK
   world:add(player, 0, 0, player.w, player.h)
 
+  -- add bullets to map
+  projectiles_layer = map:addCustomLayer("projectiles")
+  projectiles_layer.proj = {
+    sprite = lg.circle('fill', 0, 0, 10),
+    x = 0,
+    y = 0,
+    ox = 10,
+    oy = 10
+  }
+
+
   -- Prepare collision objects
 	map:bump_init(world)
 
