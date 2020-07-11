@@ -68,6 +68,8 @@ function love.load()
   player.direction = 0
   player.velocity = {x=0, y=0}
   player.can_jump = true
+  player.renderoffsetx = -2
+  player.renderoffsety = 0
   function player:jump()
     if not self.can_jump then
       return
@@ -76,9 +78,9 @@ function love.load()
     self.can_jump = false
   end
 
-  player.w = 2*BLOCK
+  player.w = 1*BLOCK
   player.h = 2*BLOCK
-  world:add(player, 0, 0, player.w, player.h)
+  world:add(player, 2*BLOCK, 0, player.w, player.h)
 
   -- add bullets to map
   projectiles_layer = map:addCustomLayer("projectiles")
@@ -124,9 +126,11 @@ function love.update(dt)
 
   player.x, player.y, cols, len = world:move(
       player,
-      lume.clamp(lume.round(player.x + player.velocity.x * dt), 0, map_width - player.w),
-      lume.clamp(lume.round(player.y + player.velocity.y * dt), -8 * BLOCK, map_height - player.h)
+      lume.clamp(lume.round(player.x - player.renderoffsetx + player.velocity.x * dt), 0, map_width - player.w),
+      lume.clamp(lume.round(player.y - player.renderoffsety + player.velocity.y * dt), -8 * BLOCK, map_height - player.h)
   )
+  player.x = player.renderoffsetx + player.x
+  player.y = player.renderoffsety + player.y
 
   for i = 1, len do
     if cols[i].touch.y > 0 then
