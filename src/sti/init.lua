@@ -4,6 +4,7 @@
 -- @copyright 2019
 -- @license MIT/X11
 
+-- https://github.com/karai17/Simple-Tiled-Implementation
 local STI = {
 	_LICENSE     = "MIT/X11",
 	_URL         = "https://github.com/karai17/Simple-Tiled-Implementation",
