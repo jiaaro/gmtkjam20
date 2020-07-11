@@ -19,6 +19,7 @@ camera = {
 BLOCK = 8 -- pixels
 
 local lg = love.graphics
+local animation = nil
 local proj = nil
 
 function getMapObjectByName(object_name)
@@ -94,6 +95,20 @@ function love.load()
 	map:bump_init(world)
 
   proj = Projectile(0, 0, 0, 0)
+
+  bat_image = lg.newImage("assets/images/animations/noBKG_BatFlight_strip.png")
+  animation = {
+    spriteSheet = bat_image,
+    quads = {},
+    duration = 1,
+    currentTime = 0
+  }
+
+  for x = 0, bat_image:getWidth() - 64, 64 do
+      table.insert(animation.quads, lg.newQuad(x, 0, 64, 64, bat_image:getDimensions()))
+  end
+
+
 end
 
 function love.update(dt)
@@ -172,6 +187,12 @@ function love.update(dt)
     pathline = {player.x, player.y + 0.5*BLOCK, player.x + player.direction*100*BLOCK, player.y + 0.5*BLOCK}
   end
 
+  -- update bat_image animation
+  animation.currentTime = animation.currentTime + dt
+  if animation.currentTime >= animation.duration then
+    animation.currentTime = animation.currentTime - animation.duration
+  end
+
 end
 
 function love.gamepadpressed(js, button)
@@ -245,6 +266,10 @@ function love.draw()
     if proj then
       proj:draw()
     end
+
+    -- draw bat animation
+    local sprite_num = math.floor(animation.currentTime / animation.duration * #animation.quads) + 1
+    lg.draw(animation.spriteSheet, animation.quads[sprite_num])
   lg.pop()
 
   -- debugging
