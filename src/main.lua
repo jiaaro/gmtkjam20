@@ -8,6 +8,7 @@ projectile = require('projectile')
 
 PX_PER_METER = 16
 PLAYER_SPEED = 8 * PX_PER_METER
+PLAYER_ON_LADDER_SPEED = 4 * PX_PER_METER
 JUMP_HEIGHT = 20 * PX_PER_METER
 
 camera = {
@@ -110,36 +111,61 @@ function love.load()
   for x = 0, bat_image:getWidth() - 64, 64 do
       table.insert(animation.quads, lg.newQuad(x, 0, 64, 64, bat_image:getDimensions()))
   end
+end
 
-
+local function playerFilter(playeritem, other)
+  return (other.layer and other.layer.properties.collision) or 'slide'
 end
 
 function love.update(dt)
+  local _, _, currentlyTouching, ctlen = world:check(player, player.x - player.renderoffsetx, player.renderoffsety + player.velocity.y, playerFilter)
+  local touchingLadder = false
+  for i = 1, ctlen do
+    local layer = currentlyTouching[i].other.layer
+    if layer and layer.name == 'ladder' then
+      touchingLadder = true
+    end
+  end
+
   if joystick and (joystick:isDown(LEFT) or joystick:getGamepadAxis("leftx") < -0.1) or love.keyboard.isDown('left', 'a') then
     player.velocity.x = math.max(-PLAYER_SPEED, player.velocity.x - (PLAYER_SPEED * .3))
     player.direction = -1
   elseif joystick and (joystick:isDown(RIGHT) or joystick:getGamepadAxis("leftx") > 0.1) or love.keyboard.isDown('right', 'd') then
     player.velocity.x = math.min(PLAYER_SPEED, player.velocity.x + (PLAYER_SPEED * .3))
     player.direction = 1
+  elseif joystick and (joystick:isDown(UP) or joystick:getGamepadAxis("lefty") > 0.1) or love.keyboard.isDown('up', 'w') then
+    if touchingLadder then
+      player.velocity.y = -PLAYER_ON_LADDER_SPEED
+    end
+  elseif joystick and (joystick:isDown(DOWN) or joystick:getGamepadAxis("lefty") < -0.1) or love.keyboard.isDown('down', 's') then
+    if touchingLadder then
+      player.velocity.y = PLAYER_ON_LADDER_SPEED
+    end
   end
 
-  player.velocity.y = player.velocity.y + PX_PER_METER
+  if not touchingLadder then
+    player.velocity.y = player.velocity.y + PX_PER_METER
+  end
 
   player.x, player.y, cols, len = world:move(
       player,
       lume.clamp(lume.round(player.x - player.renderoffsetx + player.velocity.x * dt), 0, map_width - player.w),
-      lume.clamp(lume.round(player.y - player.renderoffsety + player.velocity.y * dt), -8 * BLOCK, map_height - player.h)
+      lume.clamp(lume.round(player.y - player.renderoffsety + player.velocity.y * dt), -8 * BLOCK, map_height - player.h),
+      playerFilter
   )
   player.x = player.renderoffsetx + player.x
   player.y = player.renderoffsety + player.y
 
   for i = 1, len do
-    if cols[i].touch.y > 0 then
+    if cols[i].type == 'slide' and cols[i].touch.y > 0 then
       player.can_jump = true
       if player.velocity.y > 0 then
         player.velocity.y = 0
       end
       player.velocity.x = player.velocity.x * .7
+    elseif cols[i].other.layer and cols[i].other.layer.name == 'ladder' then
+      player.velocity.x = player.velocity.x * .2
+      player.velocity.y = player.velocity.y * .2
     end
   end
 
