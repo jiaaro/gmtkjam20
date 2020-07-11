@@ -127,6 +127,18 @@ function love.draw()
     map:bump_draw(world)
   lg.pop()
 
+
+  if player.direction < 0 then
+    ray(player.x, player.y, player.direction)
+  elseif player.direction > 0 then
+    ray(player.x + 20, player.y, player.direction)
+  end
+
   --lg.setColor(1, 1, 1)
   --drawJoystickDebug()
+end
+
+
+function ray(originX, originY, direction)
+  love.graphics.line(originX, originY, originX + direction*6, originY)
 end
