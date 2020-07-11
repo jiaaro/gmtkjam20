@@ -50,6 +50,7 @@ function love.load()
   player = getMapLayerByName('Player')
   player.speed = PLAYER_SPEED
   player.jump_height = JUMP_HEIGHT
+  player.direction = 0
   player.velocity = {x=0, y=0}
   function player:jump()
     if not CAN_JUMP then
@@ -68,8 +69,10 @@ end
 function love.update(dt)
   if joystick and (joystick:isDown(LEFT) or joystick:getGamepadAxis("leftx") < -0.1) or love.keyboard.isDown('left', 'a') then
     --player.velocity.x = math.min(PLAYER_SPEED, player.velocity.x - PLAYER_SPEED * dt)
+    player.direction = -1
     player.x = player.x - player.speed * dt
   elseif joystick and (joystick:isDown(RIGHT) or joystick:getGamepadAxis("leftx") > 0.1) or love.keyboard.isDown('right', 'd') then
+    player.direction = 1
     player.x = player.x + player.speed * dt
   end
 
