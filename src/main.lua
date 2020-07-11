@@ -69,6 +69,7 @@ function love.update(dt)
     player.velocity.x = math.min(PLAYER_SPEED, player.velocity.x + (PLAYER_SPEED * .3))
   end
 
+
   player.velocity.y = player.velocity.y + PX_PER_METER
   player.x, player.y, cols, len = world:move(
       player,
@@ -86,6 +87,19 @@ function love.update(dt)
     end
   end
   map:update(dt)
+
+
+  -- bullet stuff?
+  items, len = world:querySegmentWithCoords(player.x, player.y +2, player.x + player.velocity.x*1000, player.y +2)
+  for i, thing in ipairs(items) do
+    print(i, thing)
+    print(thing.x1, thing.y2)
+  end
+  if len > 0 then
+    pathline = {items[1].x1, items[1].y1, items[1].x2, items[1].y2}
+  else
+    pathline = nil
+  end
 end
 
 function love.gamepadpressed(js, button)
@@ -113,10 +127,13 @@ function love.keypressed(key)
   elseif key == 'left' then
   elseif cmd and key == 'r' then
   end
+
+  if key == 'v' then
+    vel_lines = not vel_lines
+  end
 end
 
 function love.mousepressed(x, y)
-
 end
 
 function love.draw()
@@ -130,14 +147,24 @@ function love.draw()
   lg.pop()
 
 
-  if player.direction < 0 then
-    ray(player.x, player.y, player.direction)
-  elseif player.direction > 0 then
-    ray(player.x + 20, player.y, player.direction)
+  if vel_lines then
+    love.graphics.setColor(1, 0, 0, 0.3)
+    love.graphics.line(player.x, player.y, player.x + player.velocity.x, player.y)
+    love.graphics.setColor(0, 1, 0, 0.3)
+    love.graphics.line(player.x, player.y, player.x, player.y + player.velocity.y)
+    love.graphics.setColor(0, 0, 1, 0.3)
+    love.graphics.line(player.x, player.y, player.x + player.velocity.x, player.y + player.velocity.y)
   end
 
   --lg.setColor(1, 1, 1)
   --drawJoystickDebug()
+
+  if pathline then
+    love.graphics.setColor(255, 255, 51, 0.6)
+    love.graphics.line(player.x, player.y, pathline[1], pathline[2])
+    love.graphics.setColor(0, 0, 1, 0.4)
+    love.graphics.circle('fill', pathline[1], pathline[2], 40)
+  end
 end
 
 
