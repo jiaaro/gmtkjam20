@@ -6,6 +6,7 @@ bump = require('bump')
 PX_PER_METER = 16
 PLAYER_SPEED = 8 * PX_PER_METER
 JUMP_HEIGHT = 2 * PX_PER_METER * 10
+BLOCK = 8 -- pixels
 
 local lg = love.graphics
 
