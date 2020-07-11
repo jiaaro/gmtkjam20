@@ -1,7 +1,24 @@
 require('joystick')
+anim8 = require 'anim8'
 sti = require('sti')
 
 local lg = love.graphics
+
+function getMapObjectByName(object_name)
+	for k, object in pairs(_G.map.objects) do
+		if object.name == object_name then
+			return object
+		end
+	end
+end
+
+function getMapLayerByName(object_name)
+	for k, object in pairs(_G.map.layers) do
+		if k == object_name then
+			return object
+		end
+	end
+end
 
 function love.load()
   windowWidth  = lg.getWidth()
@@ -10,7 +27,7 @@ function love.load()
   package.cpath = package.cpath .. ';/Users/jiaaro/Library/Application Support/JetBrains/PyCharm2020.1/plugins/intellij-emmylua/classes/debugger/emmy/mac/?.dylib'
   local dbg = require('emmy_core')
   dbg.tcpListen('localhost', 9966)
-  dbg.waitIDE()
+  --dbg.waitIDE()
 
   joysticks = love.joystick.getJoysticks()
   joystick = joysticks[1]
@@ -20,16 +37,28 @@ function love.load()
 
 	-- Load a map exported to Lua from Tiled
 	map = sti("assets/maps/map01.lua")
+  --spritesheet = lg.newImage('assets/images/s4m_ur4i_huge-assetpack-characters.png')
 
   -- Prepare physics world with horizontal and vertical gravity
-	--world = love.physics.newWorld(0, 0)
+	world = love.physics.newWorld(0, 0)
+  playerlayer = getMapLayerByName('Player')
+  player = getMapObjectByName("Player")
 
 	-- Prepare collision objects
 	--map:box2d_init(world)
 end
 
 function love.update(dt)
+  if joystick:isDown(LEFT) then
+    player.x = player.x - 2
+  elseif joystick:isDown(RIGHT) then
+    player.x = player.x + 2
+  end
+
   map:update(dt)
+
+  playerlayer.x = player.x
+  playerlayer.y = player.y
 end
 
 function love.keypressed(key)

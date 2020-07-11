@@ -1,5 +1,8 @@
 local lg = love.graphics
 
+UP, DOWN, LEFT, RIGHT = 12, 13, 14, 15
+
+
 function drawJoystickDebug()
   local joystick = _G.joystick
   local joysticks = _G.joysticks

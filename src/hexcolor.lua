@@ -15,3 +15,4 @@ return function(c)
 
   return color
 end
+
