@@ -225,7 +225,7 @@ return {
       offsetx = 0,
       offsety = 0,
       properties = {
-        ["parallax"] = 0.9
+        ["parallax"] = 0.85
       },
       encoding = "lua",
       data = {

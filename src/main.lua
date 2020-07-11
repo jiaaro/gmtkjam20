@@ -159,6 +159,7 @@ function love.keypressed(key)
   elseif key == 'right' then
   elseif key == 'left' then
   elseif cmd and key == 'r' then
+    love.load()
   end
 
   if key == 'v' then
