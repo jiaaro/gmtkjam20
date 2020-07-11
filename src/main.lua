@@ -35,7 +35,8 @@ function getMapLayerByName(object_name)
 end
 
 function love.load()
-  lg.setDefaultFilter('nearest', 'nearest')
+
+  --lg.setDefaultFilter('nearest', 'nearest')
 
   windowWidth  = lg.getWidth()
 	windowHeight = lg.getHeight()
@@ -51,8 +52,8 @@ function love.load()
 	map = sti("assets/maps/map01.lua", { 'bump' })
   map_width, map_height = map.width * map.tilewidth, map.height * map.tileheight
   camera.scale = math.min(
-      map_width / (16 * (2*BLOCK)),
-      map_height / (9 * (2*BLOCK))
+      map_width / (16 * (3*BLOCK)),
+      map_height / (9 * (3*BLOCK))
   )
 
   -- Prepare physics world with horizontal and vertical gravity
@@ -86,13 +87,12 @@ function love.update(dt)
     player.velocity.x = math.min(PLAYER_SPEED, player.velocity.x + (PLAYER_SPEED * .3))
   end
 
-
   player.velocity.y = player.velocity.y + PX_PER_METER
 
   player.x, player.y, cols, len = world:move(
       player,
-      player.x + player.velocity.x * dt,
-      player.y + player.velocity.y * dt
+      lume.round(player.x + player.velocity.x * dt),
+      lume.round(player.y + player.velocity.y * dt)
   )
 
   for i = 1, len do
@@ -104,12 +104,14 @@ function love.update(dt)
       player.velocity.x = player.velocity.x * .7
     end
   end
+
+  player.velocity.x = player.velocity.x * .95
   map:update(dt)
 
   local viewport_w = windowWidth / camera.scale
   local viewport_h = windowHeight / camera.scale
-  camera.x = lume.clamp(player.x - .5 * viewport_w, 0, map_width - viewport_w)
-  camera.y = lume.clamp(player.y - .7 * viewport_h, 0, map_height - viewport_h)
+  camera.x = lume.round(lume.clamp(player.x - .5 * viewport_w, 0, map_width - viewport_w))
+  camera.y = lume.round(lume.clamp(player.y - .7 * viewport_h, 0, map_height - viewport_h))
 
   -- bullet stuff?
   items, len = world:querySegmentWithCoords(player.x, player.y +2, player.x + player.velocity.x*1000, player.y +2)
