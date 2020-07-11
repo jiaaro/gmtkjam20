@@ -127,19 +127,26 @@ function love.update(dt)
     end
   end
 
-  if joystick and (joystick:isDown(LEFT) or joystick:getGamepadAxis("leftx") < -0.1) or love.keyboard.isDown('left', 'a') then
-    player.velocity.x = math.max(-PLAYER_SPEED, player.velocity.x - (PLAYER_SPEED * .3))
-    player.direction = -1
-  elseif joystick and (joystick:isDown(RIGHT) or joystick:getGamepadAxis("leftx") > 0.1) or love.keyboard.isDown('right', 'd') then
-    player.velocity.x = math.min(PLAYER_SPEED, player.velocity.x + (PLAYER_SPEED * .3))
-    player.direction = 1
-  elseif joystick and (joystick:isDown(UP) or joystick:getGamepadAxis("lefty") > 0.1) or love.keyboard.isDown('up', 'w') then
-    if touchingLadder then
-      player.velocity.y = -PLAYER_ON_LADDER_SPEED
+  pathline = false
+  if player.isShooting then
+    if joystick and (joystick:isDown(LEFT) or joystick:getGamepadAxis("leftx") < -0.1) or love.keyboard.isDown('left', 'a') then
+      pathline = {player.x, player.y + 0.5*BLOCK, player.direction*100*BLOCK, player.y + 0.5*BLOCK}
     end
-  elseif joystick and (joystick:isDown(DOWN) or joystick:getGamepadAxis("lefty") < -0.1) or love.keyboard.isDown('down', 's') then
-    if touchingLadder then
-      player.velocity.y = PLAYER_ON_LADDER_SPEED
+  else
+    if joystick and (joystick:isDown(LEFT) or joystick:getGamepadAxis("leftx") < -0.1) or love.keyboard.isDown('left', 'a') then
+      player.velocity.x = math.max(-PLAYER_SPEED, player.velocity.x - (PLAYER_SPEED * .3))
+      player.direction = -1
+    elseif joystick and (joystick:isDown(RIGHT) or joystick:getGamepadAxis("leftx") > 0.1) or love.keyboard.isDown('right', 'd') then
+      player.velocity.x = math.min(PLAYER_SPEED, player.velocity.x + (PLAYER_SPEED * .3))
+      player.direction = 1
+    elseif joystick and (joystick:isDown(UP) or joystick:getGamepadAxis("lefty") > 0.1) or love.keyboard.isDown('up', 'w') then
+      if touchingLadder then
+        player.velocity.y = -PLAYER_ON_LADDER_SPEED
+      end
+    elseif joystick and (joystick:isDown(DOWN) or joystick:getGamepadAxis("lefty") < -0.1) or love.keyboard.isDown('down', 's') then
+      if touchingLadder then
+        player.velocity.y = PLAYER_ON_LADDER_SPEED
+      end
     end
   end
 
@@ -184,7 +191,7 @@ function love.update(dt)
   -- bullet update
   if player.isShooting then
     proj:start(player.x, player.y, 200 * player.direction, 0)
-    player.isShooting = false
+    -- player.isShooting = false
   end
   proj:update(dt)
 
@@ -196,27 +203,27 @@ function love.update(dt)
   camera.x = lume.round(lume.clamp(player.x - .5 * viewport_w, 0, map_width - viewport_w))
   camera.y = lume.round(lume.clamp(player.y - .7 * viewport_h, 0, map_height - viewport_h))
 
-  -- whiskers = {
-  if player.direction > 0 then
-    items, len = world:querySegmentWithCoords(
-      player.x + 2*BLOCK,
-      player.y + 0.5*BLOCK,
-      player.x + 2*BLOCK + player.direction*100*BLOCK,
-      player.y + 0.5*BLOCK
-    )
-  else
-    items, len = world:querySegmentWithCoords(
-      player.x,
-      player.y + 0.5*BLOCK,
-      player.x + 2*BLOCK + player.direction*100*BLOCK,
-      player.y + 0.5*BLOCK
-    )
-  end
-  if len > 0 then
-    pathline = {player.x, player.y + 0.5*BLOCK, items[1].x1, items[1].y1}
-  else
-    pathline = {player.x, player.y + 0.5*BLOCK, player.x + player.direction*100*BLOCK, player.y + 0.5*BLOCK}
-  end
+  -- -- whiskers = {
+  -- if player.direction > 0 then
+  --   items, len = world:querySegmentWithCoords(
+  --     player.x + 2*BLOCK,
+  --     player.y + 0.5*BLOCK,
+  --     player.x + 2*BLOCK + player.direction*100*BLOCK,
+  --     player.y + 0.5*BLOCK
+  --   )
+  -- else
+  --   items, len = world:querySegmentWithCoords(
+  --     player.x,
+  --     player.y + 0.5*BLOCK,
+  --     player.x + 2*BLOCK + player.direction*100*BLOCK,
+  --     player.y + 0.5*BLOCK
+  --   )
+  -- end
+  -- if len > 0 then
+  --   pathline = {player.x, player.y + 0.5*BLOCK, items[1].x1, items[1].y1}
+  -- else
+  --   pathline = {player.x, player.y + 0.5*BLOCK, player.x + player.direction*100*BLOCK, player.y + 0.5*BLOCK}
+  -- end
 
   -- update bat_image animation
   animation.currentTime = animation.currentTime + dt

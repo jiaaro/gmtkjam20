@@ -1,7 +1,16 @@
 local lg = love.graphics
 
+
 UP, DOWN, LEFT, RIGHT = 12, 13, 14, 15
 
+BUTTON = {
+  X = 1,
+  CIRCLE = 2,
+  SQUARE = 3,
+  TRIANGLE = 4,
+  L3 = 8,
+  R3 = 9
+}
 
 function drawJoystickDebug()
   local joystick = _G.joystick
