@@ -122,6 +122,17 @@ function love.update(dt)
     end
   end
 
+
+  -- bullet update
+  if player.isShooting then
+    proj:start(player.x, player.y, 200 * player.direction, 0)
+    player.isShooting = false
+  end
+  if proj.active then
+    proj:update(dt)
+  end
+
+
   map:update(dt)
 
   local viewport_w = windowWidth / camera.scale
@@ -160,6 +171,10 @@ function love.gamepadpressed(js, button)
 
   if button == 'a' then
     player:jump()
+  end
+
+  if button == 'x' then
+    player.isShooting = true
   end
 end
 
@@ -216,13 +231,28 @@ function love.draw()
       lg.setColor(0, 0, 1, 0.4)
       lg.circle('fill', pathline[3], pathline[4], 40)
     end
+
+    if proj then
+      proj:draw()
+    end
   lg.pop()
 
-  --lg.setColor(1, 1, 1)
-  --drawJoystickDebug()
+  -- debugging
+  lg.setColor(1, 1, 1)
+  local x,y,w,h = world:getRect(player)
+  lg.print(string.format([[
+    player: (%0.2f, %0.2f)
+    player vel: (%0.2f, %0.2f)
+    player rect: (%0.2f, %0.2f) - %0.2f x %0.2f
+    proj: (%0.2f, %0.2f)
+  ]],
+  player.x, player.y,
+  player.velocity.x, player.velocity.y,
+  x, y, w, h,
+  proj.x, proj.y),
+  0, 0)
 
-  if proj then
-    proj:draw()
-  end
+  -- drawJoystickDebug()
+
 end
 
