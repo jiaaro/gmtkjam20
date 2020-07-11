@@ -68,8 +68,7 @@ function love.load()
   player.direction = 0
   player.velocity = {x=0, y=0}
   player.can_jump = true
-  player.renderoffsetx = -2
-  player.renderoffsety = 0
+
   function player:jump()
     if not self.can_jump then
       return
@@ -78,8 +77,10 @@ function love.load()
     self.can_jump = false
   end
 
-  player.w = 1*BLOCK
+  player.w = 8
   player.h = 2*BLOCK
+  player.renderoffsetx = -2
+  player.renderoffsety = 0
   world:add(player, 2*BLOCK, 0, player.w, player.h)
 
   -- add bullets to map
