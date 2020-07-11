@@ -114,6 +114,7 @@ function love.update(dt)
     if layer.properties.parallax then
       local parallax = layer.properties.parallax or 1.0
       layer.x = lume.round((1 - parallax) * camera.x)
+      layer.y = lume.round((1 - parallax) * camera.y)
     end
   end
 
