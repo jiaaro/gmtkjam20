@@ -41,7 +41,9 @@ function Projectile:start(startX, startY, velocityX, velocityY)
     return
   end
   world:add(self, startX, startY, 3, 3)
-  -- self.velocity = {x = velocityX, y = velocityY}
+  self.x = startX
+  self.y = startY
+  self.velocity = {x = velocityX, y = velocityY}
   self.active = true
   self.ttl = 60
 end
