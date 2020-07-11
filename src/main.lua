@@ -83,8 +83,10 @@ end
 function love.update(dt)
   if joystick and (joystick:isDown(LEFT) or joystick:getGamepadAxis("leftx") < -0.1) or love.keyboard.isDown('left', 'a') then
     player.velocity.x = math.max(-PLAYER_SPEED, player.velocity.x - (PLAYER_SPEED * .3))
+    player.direction = -1
   elseif joystick and (joystick:isDown(RIGHT) or joystick:getGamepadAxis("leftx") > 0.1) or love.keyboard.isDown('right', 'd') then
     player.velocity.x = math.min(PLAYER_SPEED, player.velocity.x + (PLAYER_SPEED * .3))
+    player.direction = 1
   end
 
   player.velocity.y = player.velocity.y + PX_PER_METER
@@ -122,17 +124,29 @@ function love.update(dt)
   camera.x = lume.round(lume.clamp(player.x - .5 * viewport_w, 0, map_width - viewport_w))
   camera.y = lume.round(lume.clamp(player.y - .7 * viewport_h, 0, map_height - viewport_h))
 
-  -- bullet stuff?
-  items, len = world:querySegmentWithCoords(player.x, player.y +2, player.x + player.velocity.x*1000, player.y +2)
-  for i, thing in ipairs(items) do
-    print(i, thing)
-    print(thing.x1, thing.y2)
-  end
-  if len > 0 then
-    pathline = {items[1].x1, items[1].y1, items[1].x2, items[1].y2}
+  -- whiskers = {
+  if player.direction > 0 then
+    items, len = world:querySegmentWithCoords(
+      player.x + 2*BLOCK,
+      player.y + 0.5*BLOCK,
+      player.x + 2*BLOCK + player.direction*100*BLOCK,
+      player.y + 0.5*BLOCK
+    )
   else
-    pathline = nil
+    items, len = world:querySegmentWithCoords(
+      player.x,
+      player.y + 0.5*BLOCK,
+      player.x + 2*BLOCK + player.direction*100*BLOCK,
+      player.y + 0.5*BLOCK
+    )
   end
+  print(len)
+  if len > 0 then
+    pathline = {player.x, player.y + 0.5*BLOCK, items[1].x1, items[1].y1}
+  else
+    pathline = {player.x, player.y + 0.5*BLOCK, player.x + player.direction*100*BLOCK, player.y + 0.5*BLOCK}
+  end
+
 end
 
 function love.gamepadpressed(js, button)
@@ -193,18 +207,13 @@ function love.draw()
     end
 
     if pathline then
-      lg.setColor(255, 255, 51, 0.6)
-      lg.line(player.x, player.y, pathline[1], pathline[2])
+      lg.setColor(255, 255, 51, 0.8)
+      lg.line(pathline[1], pathline[2], pathline[3], pathline[4])
       lg.setColor(0, 0, 1, 0.4)
-      lg.circle('fill', pathline[1], pathline[2], 40)
+      lg.circle('fill', pathline[3], pathline[4], 40)
     end
   lg.pop()
 
   --lg.setColor(1, 1, 1)
   --drawJoystickDebug()
-end
-
-
-function ray(originX, originY, direction)
-  lg.line(originX, originY, originX + direction*6, originY)
 end
