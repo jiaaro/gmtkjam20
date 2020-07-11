@@ -548,8 +548,8 @@ return {
       name = "Player",
       visible = true,
       opacity = 1,
-      offsetx = 8,
-      offsety = 40,
+      offsetx = 0,
+      offsety = 0,
       properties = {},
       encoding = "lua",
       data = {

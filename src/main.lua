@@ -32,7 +32,7 @@ function love.load()
 
   local dbg = require('emmy_core')
   dbg.tcpListen('localhost', 9966)
-  --dbg.waitIDE()
+  dbg.waitIDE()
 
   joysticks = love.joystick.getJoysticks()
   joystick = joysticks[1]
@@ -49,7 +49,11 @@ function love.load()
   player = getMapLayerByName('Player')
   player.speed = PLAYER_SPEED
   player.jump_height = JUMP_HEIGHT
-	-- Prepare collision objects
+  player.velocity = {0, 0}
+
+  world:add(player, 0, 0, 3*8, 4*8)
+
+  -- Prepare collision objects
 	map:bump_init(world)
 end
 
@@ -60,6 +64,14 @@ function love.update(dt)
     player.x = player.x + player.speed * dt
   end
 
+  player.velocity[2] = player.velocity[2] + PX_PER_METER * dt
+  player.x, player.y, cols, len = world:move(player, player.x + player.velocity[1], player.y + player.velocity[2])
+
+  for i = 1, len do
+    if cols[i].touch[1] > 0 then
+
+    end
+  end
   map:update(dt)
 end
 
@@ -88,7 +100,7 @@ function love.draw()
 
   -- Draw Collision Map (useful for debugging)
 	lg.push()
-    lg.setColor(1, 0, 0, 0.3)
+    lg.setColor(1, 0, 0, 0.5)
     map:bump_draw(world)
   lg.pop()
 
