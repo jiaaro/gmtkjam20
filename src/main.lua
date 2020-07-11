@@ -41,7 +41,7 @@ function love.load()
 	love.physics.setMeter(16)
 
 	-- Load a map exported to Lua from Tiled
-	map = sti("assets/maps/map01.lua")
+	map = sti("assets/maps/map01.lua", { 'box2d' })
   --spritesheet = lg.newImage('assets/images/s4m_ur4i_huge-assetpack-characters.png')
 
   -- Prepare physics world with horizontal and vertical gravity
@@ -51,7 +51,7 @@ function love.load()
   player.speed = PLAYER_SPEED
   player.jump_height = JUMP_HEIGHT
 	-- Prepare collision objects
-	--map:box2d_init(world)
+	map:box2d_init(world)
 end
 
 function love.update(dt)
