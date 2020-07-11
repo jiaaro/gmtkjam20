@@ -46,8 +46,7 @@ function love.load()
 
   -- Prepare physics world with horizontal and vertical gravity
 	world = bump.newWorld(16)
-  playerlayer = getMapLayerByName('Player')
-  player = getMapObjectByName("Player")
+  player = getMapLayerByName('Player')
   player.speed = PLAYER_SPEED
   player.jump_height = JUMP_HEIGHT
 	-- Prepare collision objects
@@ -62,9 +61,6 @@ function love.update(dt)
   end
 
   map:update(dt)
-
-  playerlayer.x = player.x
-  playerlayer.y = player.y
 end
 
 function love.keypressed(key)
@@ -92,7 +88,7 @@ function love.draw()
 
   -- Draw Collision Map (useful for debugging)
 	lg.push()
-    lg.setColor(1, 0, 0)
+    lg.setColor(1, 0, 0, 0.3)
     map:bump_draw(world)
   lg.pop()
 

@@ -539,32 +539,6 @@ return {
       }
     },
     {
-      type = "objectgroup",
-      draworder = "topdown",
-      id = 7,
-      name = "Spawn point",
-      visible = true,
-      opacity = 1,
-      offsetx = 0,
-      offsety = 0,
-      properties = {},
-      objects = {
-        {
-          id = 1,
-          name = "Player",
-          type = "",
-          shape = "rectangle",
-          x = 8,
-          y = 40,
-          width = 32,
-          height = 32,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        }
-      }
-    },
-    {
       type = "tilelayer",
       x = 0,
       y = 0,
@@ -679,45 +653,6 @@ return {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-      }
-    },
-    {
-      type = "objectgroup",
-      draworder = "topdown",
-      id = 10,
-      name = "floor",
-      visible = true,
-      opacity = 1,
-      offsetx = 0,
-      offsety = 0,
-      properties = {},
-      objects = {
-        {
-          id = 12,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 0,
-          y = 72,
-          width = 168,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 13,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 192,
-          y = 72,
-          width = 48,
-          height = 15.762,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        }
       }
     }
   }
