@@ -2,10 +2,18 @@ require('joystick')
 anim8 = require('anim8')
 sti = require('sti')
 bump = require('bump')
+lume = require("lume")
 
 PX_PER_METER = 16
 PLAYER_SPEED = 8 * PX_PER_METER
-JUMP_HEIGHT = 2 * PX_PER_METER * 10
+JUMP_HEIGHT = 20 * PX_PER_METER
+
+camera = {
+  zoom = 1,
+  x = 0,
+  y = 0,
+}
+
 BLOCK = 8 -- pixels
 
 local lg = love.graphics
@@ -27,6 +35,8 @@ function getMapLayerByName(object_name)
 end
 
 function love.load()
+  lg.setDefaultFilter('nearest', 'nearest')
+
   windowWidth  = lg.getWidth()
 	windowHeight = lg.getHeight()
 
@@ -39,10 +49,14 @@ function love.load()
 
 	-- Load a map exported to Lua from Tiled
 	map = sti("assets/maps/map01.lua", { 'bump' })
-  --spritesheet = lg.newImage('assets/images/s4m_ur4i_huge-assetpack-characters.png')
+  map_width, map_height = map.width * map.tilewidth, map.height * map.tileheight
+  camera.scale = math.min(
+      map_width / (16 * (2*BLOCK)),
+      map_height / (9 * (2*BLOCK))
+  )
 
   -- Prepare physics world with horizontal and vertical gravity
-	world = bump.newWorld(16)
+	world = bump.newWorld(2 * BLOCK)
   player = getMapLayerByName('Player')
   player.speed = PLAYER_SPEED
   player.jump_height = JUMP_HEIGHT
@@ -57,7 +71,9 @@ function love.load()
     self.can_jump = false
   end
 
-  world:add(player, 0, 0, 3*8, 4*8)
+  player.w = 2*BLOCK
+  player.h = 2*BLOCK
+  world:add(player, 0, 0, player.w, player.h)
 
   -- Prepare collision objects
 	map:bump_init(world)
@@ -72,6 +88,7 @@ function love.update(dt)
 
 
   player.velocity.y = player.velocity.y + PX_PER_METER
+
   player.x, player.y, cols, len = world:move(
       player,
       player.x + player.velocity.x * dt,
@@ -89,6 +106,10 @@ function love.update(dt)
   end
   map:update(dt)
 
+  local viewport_w = windowWidth / camera.scale
+  local viewport_h = windowHeight / camera.scale
+  camera.x = lume.clamp(player.x - .5 * viewport_w, 0, map_width - viewport_w)
+  camera.y = lume.clamp(player.y - .7 * viewport_h, 0, map_height - viewport_h)
 
   -- bullet stuff?
   items, len = world:querySegmentWithCoords(player.x, player.y +2, player.x + player.velocity.x*1000, player.y +2)
@@ -139,36 +160,39 @@ end
 
 function love.draw()
   lg.setColor(1, 1, 1)
-  map:draw()
+
+  map:draw(-camera.x, -camera.y, camera.scale, camera.scale)
 
   -- Draw Collision Map (useful for debugging)
-	lg.push()
-    lg.setColor(1, 0, 0, 0.5)
-    map:bump_draw(world)
+  lg.setColor(1, 0, 0, 0.5)
+  map:bump_draw(world, -camera.x, -camera.y, camera.scale, camera.scale)
+
+  lg.push()
+    lg.scale(camera.scale)
+    lg.translate(-camera.x, -camera.y)
+
+    if vel_lines then
+      lg.setColor(1, 0, 0, 0.3)
+      lg.line(player.x, player.y, player.x + player.velocity.x, player.y)
+      lg.setColor(0, 1, 0, 0.3)
+      lg.line(player.x, player.y, player.x, player.y + player.velocity.y)
+      lg.setColor(0, 0, 1, 0.3)
+      lg.line(player.x, player.y, player.x + player.velocity.x, player.y + player.velocity.y)
+    end
+
+    if pathline then
+      lg.setColor(255, 255, 51, 0.6)
+      lg.line(player.x, player.y, pathline[1], pathline[2])
+      lg.setColor(0, 0, 1, 0.4)
+      lg.circle('fill', pathline[1], pathline[2], 40)
+    end
   lg.pop()
-
-
-  if vel_lines then
-    love.graphics.setColor(1, 0, 0, 0.3)
-    love.graphics.line(player.x, player.y, player.x + player.velocity.x, player.y)
-    love.graphics.setColor(0, 1, 0, 0.3)
-    love.graphics.line(player.x, player.y, player.x, player.y + player.velocity.y)
-    love.graphics.setColor(0, 0, 1, 0.3)
-    love.graphics.line(player.x, player.y, player.x + player.velocity.x, player.y + player.velocity.y)
-  end
 
   --lg.setColor(1, 1, 1)
   --drawJoystickDebug()
-
-  if pathline then
-    love.graphics.setColor(255, 255, 51, 0.6)
-    love.graphics.line(player.x, player.y, pathline[1], pathline[2])
-    love.graphics.setColor(0, 0, 1, 0.4)
-    love.graphics.circle('fill', pathline[1], pathline[2], 40)
-  end
 end
 
 
 function ray(originX, originY, direction)
-  love.graphics.line(originX, originY, originX + direction*6, originY)
+  lg.line(originX, originY, originX + direction*6, originY)
 end
