@@ -52,8 +52,8 @@ function love.load()
 	map = sti("assets/maps/map01.lua", { 'bump' })
   map_width, map_height = map.width * map.tilewidth, map.height * map.tileheight
   camera.scale = math.min(
-      map_width / (16 * (3*BLOCK)),
-      map_height / (9 * (3*BLOCK))
+      map_width / (16 * (2*BLOCK)),
+      map_height / (9 * (2*BLOCK))
   )
 
   -- Prepare physics world with horizontal and vertical gravity
@@ -192,7 +192,7 @@ function love.draw()
 
   -- Draw Collision Map (useful for debugging)
   lg.setColor(1, 0, 0, 0.5)
-  map:bump_draw(world, -camera.x, -camera.y, camera.scale, camera.scale)
+  --map:bump_draw(world, -camera.x, -camera.y, camera.scale, camera.scale)
 
   lg.push()
     lg.scale(camera.scale)
