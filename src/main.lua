@@ -97,8 +97,8 @@ function love.update(dt)
 
   player.x, player.y, cols, len = world:move(
       player,
-      lume.round(player.x + player.velocity.x * dt),
-      lume.round(player.y + player.velocity.y * dt)
+      lume.clamp(lume.round(player.x + player.velocity.x * dt), 0, map_width),
+      lume.clamp(lume.round(player.y + player.velocity.y * dt), 0, map_height)
   )
 
   for i = 1, len do
