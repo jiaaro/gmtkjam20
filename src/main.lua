@@ -87,12 +87,15 @@ function love.mousepressed(x, y)
 end
 
 function love.draw()
+  lg.setColor(1, 1, 1)
   map:draw()
 
   -- Draw Collision Map (useful for debugging)
-	love.graphics.setColor(1, 0, 0)
-	map:bump_draw(world)
+	lg.push()
+    lg.setColor(1, 0, 0)
+    map:bump_draw(world)
+  lg.pop()
 
-
-  drawJoystickDebug()
+  --lg.setColor(1, 1, 1)
+  --drawJoystickDebug()
 end
