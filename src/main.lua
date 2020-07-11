@@ -36,7 +36,7 @@ end
 
 function love.load()
 
-  --lg.setDefaultFilter('nearest', 'nearest')
+  lg.setDefaultFilter('nearest', 'nearest')
 
   windowWidth  = lg.getWidth()
 	windowHeight = lg.getHeight()
