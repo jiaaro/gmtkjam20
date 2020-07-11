@@ -23,6 +23,22 @@ local lg = love.graphics
 local animation = nil
 local proj = nil
 
+local keyboard_controls_map = {
+  [LEFT] = {'left', 'a'},
+  [RIGHT] = {'right', 'd'},
+  [UP] = {'up', 'w'},
+  [DOWN] = {'down', 's'}
+}
+local gamePadAxis_map = {
+  [LEFT] = {'leftx', -0.1},
+  [RIGHT] = {'rightx', 0.1},
+  [UP] = {'lefty', 0.1},
+  [DOWN] = {'lefty', -0.1}
+}
+function playerIsMoving(dir)
+  return joystick and (joystick:isDown(dir) or joystick:getGamepadAxis(gamePadAxis_map[dir][1]) < gamePadAxis_map[dir][2]) or love.keyboard.isDown(keyboard_controls_map[dir][1], keyboard_controls_map[dir][2])
+end
+
 function getMapObjectByName(object_name)
 	for k, object in pairs(_G.map.objects) do
 		if object.name == object_name then
@@ -122,30 +138,30 @@ function love.update(dt)
   local touchingLadder = false
   for i = 1, ctlen do
     local layer = currentlyTouching[i].other.layer
-    if currentlyTouching[i].overlaps and layer and layer.name == 'ladder' then
+    if layer and layer.name == 'ladder' then
       touchingLadder = true
-      player.velocity.x = 0
-      player.velocity.y = 0
     end
   end
 
   pathline = false
-  if player.isShooting then
-    if joystick and (joystick:isDown(LEFT) or joystick:getGamepadAxis("leftx") < -0.1) or love.keyboard.isDown('left', 'a') then
-      pathline = {player.x, player.y + 0.5*BLOCK, player.direction*100*BLOCK, player.y + 0.5*BLOCK}
+  if joystick and joystick:isDown(BUTTON.SQUARE) or love.keyboard.isDown('j') then
+    if playerIsMoving(LEFT) then
+      pathline = {player.x, player.y + 0.5*BLOCK, -100*BLOCK, player.y + 0.5*BLOCK}
+    elseif playerIsMoving(RIGHT) then
+      pathline = {player.x, player.y + 0.5*BLOCK, 100*BLOCK, player.y + 0.5*BLOCK}
     end
   else
-    if joystick and (joystick:isDown(LEFT) or joystick:getGamepadAxis("leftx") < -0.1) or love.keyboard.isDown('left', 'a') then
+    if playerIsMoving(LEFT) then
       player.velocity.x = math.max(-PLAYER_SPEED, player.velocity.x - (PLAYER_SPEED * .3))
       player.direction = -1
-    elseif joystick and (joystick:isDown(RIGHT) or joystick:getGamepadAxis("leftx") > 0.1) or love.keyboard.isDown('right', 'd') then
+    elseif playerIsMoving(RIGHT) then
       player.velocity.x = math.min(PLAYER_SPEED, player.velocity.x + (PLAYER_SPEED * .3))
       player.direction = 1
-    elseif joystick and (joystick:isDown(UP) or joystick:getGamepadAxis("lefty") > 0.1) or love.keyboard.isDown('up', 'w') then
+    elseif playerIsMoving(UP) then
       if touchingLadder then
         player.velocity.y = -PLAYER_ON_LADDER_SPEED
       end
-    elseif joystick and (joystick:isDown(DOWN) or joystick:getGamepadAxis("lefty") < -0.1) or love.keyboard.isDown('down', 's') then
+    elseif playerIsMoving(DOWN) then
       if touchingLadder then
         player.velocity.y = PLAYER_ON_LADDER_SPEED
       end
@@ -172,6 +188,9 @@ function love.update(dt)
         player.velocity.y = 0
       end
       player.velocity.x = player.velocity.x * .7
+    elseif cols[i].other.layer and cols[i].other.layer.name == 'ladder' then
+      player.velocity.x = player.velocity.x * .2
+      player.velocity.y = player.velocity.y * .2
     end
   end
 
@@ -241,9 +260,10 @@ function love.gamepadpressed(js, button)
     player:jump()
   end
 
-  if button == 'x' then
-    player.isShooting = true
-  end
+  -- if button == 'x' then
+  --   player.isShooting = true
+  -- end
+
 end
 
 function love.keypressed(key)
