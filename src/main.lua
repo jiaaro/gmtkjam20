@@ -12,6 +12,7 @@ PX_PER_METER = 16
 PLAYER_SPEED = 8 * PX_PER_METER
 PLAYER_ON_LADDER_SPEED = 4 * PX_PER_METER
 JUMP_HEIGHT = 20 * PX_PER_METER
+MIN_DEAD_TIME = 1 -- seconds
 
 camera = {
   zoom = 1,
@@ -127,6 +128,11 @@ function love.load()
   player.can_jump = true
 
   function player:jump()
+    if player.is_dead and t - player.death_time > MIN_DEAD_TIME then
+      love.load()
+      return
+    end
+
     if not self.can_jump then
       return
     end
@@ -167,6 +173,9 @@ end
 function love.update(dt)
   -- total game time
   t = t + dt
+  if player.is_dead then
+    return
+  end
 
   -- hack to move hitbox (corresponding correction at end of update for render stage)
   player.x = player.x - player.renderoffsetx
@@ -331,9 +340,7 @@ function love.keypressed(key)
     player.death_time = nil
   elseif cmd and key == 'r' then
     love.load()
-  end
-
-  if key == 'v' then
+  elseif key == 'v' then
     vel_lines = not vel_lines
   end
 end
@@ -396,8 +403,12 @@ function love.draw()
 
   -- drawJoystickDebug()
   if player.is_dead then
+    local message = "YOU DIED"
+    if t - player.death_time > MIN_DEAD_TIME then
+      message = 'continue?'
+    end
     lg.printf(
-        "YOU DIED",
+        message,
         youdiedfont,
         0, windowHeight * .25,
         windowWidth, 'center'
