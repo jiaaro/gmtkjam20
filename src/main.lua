@@ -5,6 +5,7 @@ bump = require('bump')
 lume = require("lume")
 
 projectile = require('projectile')
+gun = require('gun')
 
 PX_PER_METER = 16
 PLAYER_SPEED = 8 * PX_PER_METER
@@ -23,6 +24,7 @@ local lg = love.graphics
 local animation = nil
 local proj = nil
 
+movementVector = {x = 0, y = 0}
 local keyboard_controls_map = {
   [LEFT] = {'left', 'a'},
   [RIGHT] = {'right', 'd'},
@@ -136,6 +138,7 @@ function love.load()
   -- Prepare collision objects
 	map:bump_init(world)
 
+  gun.state = READY
   proj = Projectile(0, 0, 0, 0)
 
   bat_image = lg.newImage("assets/images/animations/noBKG_BatFlight_strip.png")
@@ -168,10 +171,15 @@ function love.update(dt)
     end
   end
 
-  if joystick and joystick:isDown(BUTTON.SQUARE) or love.keyboard.isDown('j') then
+  if joystick and (joystick:isDown(BUTTON.SQUARE) or love.keyboard.isDown('j')) and (gun.state == READY or gun.state == AIMING) then
+    gun.state = AIMING
     movementVector = getInputVector()
     pathline = {player.x + 0.5*player.w, player.y + 0.5*player.h, player.x + 0.5*player.w + 100*(movementVector.x), player.y + 0.5*player.h + 100*(movementVector.y)}
   else
+    if gun.state == AIMING then
+      gun.state = FIRING
+    else
+    end
     if playerIsMoving(LEFT) then
       player.velocity.x = math.max(-PLAYER_SPEED, player.velocity.x - (PLAYER_SPEED * .3))
       player.direction = -1
@@ -229,9 +237,9 @@ function love.update(dt)
 
 
   -- bullet update
-  if player.isShooting then
-    proj:start(player.x, player.y, 200 * player.direction, 0)
-    -- player.isShooting = false
+  if gun.state == FIRING then
+    proj:start(player.x, player.y, 200*movementVector.x, 200*movementVector.y)
+    gun.state = RESOLVING
   end
   proj:update(dt)
 
