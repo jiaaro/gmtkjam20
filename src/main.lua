@@ -159,7 +159,7 @@ function love.update(dt)
     right = x > 0.8
     up = y < -0.8
     down = y > 0.8
-    pathline = {player.x + x*player.w, player.y + y*0.5*player.h, player.x + x*0.5*player.w + 100*x, player.y + y*0.5*player.h + 100*y}
+    pathline = {player.x + x*0.5*player.w, player.y + y*0.5*player.h, player.x + x*0.5*player.w + 100*x, player.y + y*0.5*player.h + 100*y}
   else
     if playerIsMoving(LEFT) then
       player.velocity.x = math.max(-PLAYER_SPEED, player.velocity.x - (PLAYER_SPEED * .3))
