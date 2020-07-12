@@ -115,12 +115,28 @@ function love.load(args)
   player.is_dead = false
   player.speed = PLAYER_SPEED
   player.jump_height = JUMP_HEIGHT
-  player.direction = 0
+  player.direction = 1
   player.velocity = {x=0, y=0}
   player.can_jump = true
+  player.x = 2*BLOCK
+  player.y = 2*BLOCK
 
   gun = Gun()
+  function player:draw()
+    local x, y
+    for _, batch in pairs(self.batches) do
+      x, y = self.x, self.y
+      x = x + self.renderoffsetx
+      y = y + self.renderoffsety
+      if self.direction == -1 then
+        x = x + 12
+      end
+      -- draw hitbox for debugging
+      --lg.rectangle('fill', math.floor(self.x), math.floor(self.y), self.w, self.h)
 
+      lg.draw(batch, math.floor(x), math.floor(y), 0, player.direction, 1)
+    end
+  end
   function player:jump()
     if DEATH_POSSIBLE and player.is_dead and t - player.death_time > MIN_DEAD_TIME then
       love.load()
@@ -171,10 +187,6 @@ function love.update(dt)
   if DEATH_POSSIBLE and player.is_dead then
     return
   end
-
-  -- hack to move hitbox (corresponding correction at end of update for render stage)
-  player.x = player.x - player.renderoffsetx
-  player.y = player.y - player.renderoffsety
 
   local _, _, currentlyTouching, ctlen = world:check(player, player.x, player.y, playerFilter)
   local touchingLadder = false
@@ -311,10 +323,6 @@ function love.update(dt)
   if animation.currentTime >= animation.duration then
     animation.currentTime = animation.currentTime - animation.duration
   end
-
-  -- hack to move hitbox (see top of love.update)
-  player.x = player.renderoffsetx + player.x
-  player.y = player.renderoffsety + player.y
 end
 
 function love.gamepadpressed(js, button)
