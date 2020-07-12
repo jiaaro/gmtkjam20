@@ -326,6 +326,9 @@ function love.keypressed(key)
     player:jump()
   elseif key == 'right' then
   elseif key == 'left' then
+  elseif love.keyboard.isDown("lshift", 'rshift') and cmd and key == 'r' then
+    player.is_dead = false
+    player.death_time = nil
   elseif cmd and key == 'r' then
     love.load()
   end
