@@ -30,18 +30,46 @@ local keyboard_controls_map = {
   [DOWN] = {'down', 's'}
 }
 local gamePadAxis_map = {
-  [LEFT] = {'leftx', -0.8},
-  [RIGHT] = {'leftx', 0.8},
-  [UP] = {'lefty', -0.8},
-  [DOWN] = {'lefty', 0.8}
+  [LEFT] = {'leftx', -0.75},
+  [RIGHT] = {'leftx', 0.75},
+  [UP] = {'lefty', -0.75},
+  [DOWN] = {'lefty', 0.75}
 }
-
 function playerIsMoving(dir)
   if dir == LEFT or dir == UP then
     return joystick and (joystick:isDown(dir) or joystick:getGamepadAxis(gamePadAxis_map[dir][1]) < gamePadAxis_map[dir][2]) or love.keyboard.isDown(keyboard_controls_map[dir][1], keyboard_controls_map[dir][2])
   else
     return joystick and (joystick:isDown(dir) or joystick:getGamepadAxis(gamePadAxis_map[dir][1]) > gamePadAxis_map[dir][2]) or love.keyboard.isDown(keyboard_controls_map[dir][1], keyboard_controls_map[dir][2])
   end
+end
+
+function getInputVector()
+  local pathline = false
+  left = playerIsMoving(LEFT) and -1 or 0
+  right = playerIsMoving(RIGHT) and 1 or 0
+  up = playerIsMoving(UP) and -1 or 0
+  down = playerIsMoving(DOWN) and 1 or 0
+  if left+right == 0 and up+down == 0 then
+    -- using analog stick
+    local x = joystick:getGamepadAxis('leftx')
+    local y = joystick:getGamepadAxis('lefty')
+    if x < -0.4 then
+      left = -1
+      if x < -0.75 and y > -0.75 then
+        up = -1
+      elseif x > -0.75 and y < 0.75 then
+        down = 1
+      end
+    elseif x > 0.4 then
+      right = 1
+      if x < 0.75 and y > -0.75 then
+        up = -1
+      elseif x > 0.75 and y > 0.75 then
+        down = 1
+      end
+    end
+  end
+  return {x = left+right, y = up+down}
 end
 
 function getMapObjectByName(object_name)
@@ -105,17 +133,6 @@ function love.load()
   player.renderoffsety = -3
   world:add(player, 2*BLOCK, 0, player.w, player.h)
 
-  -- add bullets to map
-  projectiles_layer = map:addCustomLayer("projectiles")
-  projectiles_layer.proj = {
-    sprite = lg.circle('fill', 0, 0, 10),
-    x = 0,
-    y = 0,
-    ox = 10,
-    oy = 10
-  }
-
-
   -- Prepare collision objects
 	map:bump_init(world)
 
@@ -151,15 +168,9 @@ function love.update(dt)
     end
   end
 
-  pathline = false
-  if joystick and joystick:isDown(BUTTON.SQUARE) or love.keyboard.isDown('j') then
-    local x = joystick:getGamepadAxis('leftx')
-    local y = joystick:getGamepadAxis('lefty')
-    left = x < -0.8
-    right = x > 0.8
-    up = y < -0.8
-    down = y > 0.8
-    pathline = {player.x + x*0.5*player.w, player.y + y*0.5*player.h, player.x + x*0.5*player.w + 100*x, player.y + y*0.5*player.h + 100*y}
+  if joystick and (joystick:isDown(BUTTON.SQUARE) or love.keyboard.isDown('j')) then
+    movementVector = getInputVector()
+    pathline = {player.x + 0.5*player.w, player.y + 0.5*player.h, player.x + 0.5*player.w + 100*(movementVector.x), player.y + 0.5*player.h + 100*(movementVector.y)}
   else
     if playerIsMoving(LEFT) then
       player.velocity.x = math.max(-PLAYER_SPEED, player.velocity.x - (PLAYER_SPEED * .3))
@@ -174,6 +185,7 @@ function love.update(dt)
           player:jump()
         end
       end
+
     elseif playerIsMoving(DOWN) then
       if touchingLadder then
         player.velocity.y = PLAYER_ON_LADDER_SPEED
