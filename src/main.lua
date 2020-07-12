@@ -30,13 +30,14 @@ local keyboard_controls_map = {
   [DOWN] = {'down', 's'}
 }
 local gamePadAxis_map = {
-  [LEFT] = {'leftx', -0.1},
-  [RIGHT] = {'leftx', 0.1},
-  [UP] = {'lefty', 0.1},
-  [DOWN] = {'lefty', -0.1}
+  [LEFT] = {'leftx', -0.8},
+  [RIGHT] = {'leftx', 0.8},
+  [UP] = {'lefty', -0.8},
+  [DOWN] = {'lefty', 0.8}
 }
+
 function playerIsMoving(dir)
-  if dir == LEFT or dir == DOWN then
+  if dir == LEFT or dir == UP then
     return joystick and (joystick:isDown(dir) or joystick:getGamepadAxis(gamePadAxis_map[dir][1]) < gamePadAxis_map[dir][2]) or love.keyboard.isDown(keyboard_controls_map[dir][1], keyboard_controls_map[dir][2])
   else
     return joystick and (joystick:isDown(dir) or joystick:getGamepadAxis(gamePadAxis_map[dir][1]) > gamePadAxis_map[dir][2]) or love.keyboard.isDown(keyboard_controls_map[dir][1], keyboard_controls_map[dir][2])
@@ -149,11 +150,13 @@ function love.update(dt)
 
   pathline = false
   if joystick and joystick:isDown(BUTTON.SQUARE) or love.keyboard.isDown('j') then
-    if playerIsMoving(LEFT) then
-      pathline = {player.x, player.y + 0.5*BLOCK, -100*BLOCK, player.y + 0.5*BLOCK}
-    elseif playerIsMoving(RIGHT) then
-      pathline = {player.x, player.y + 0.5*BLOCK, 100*BLOCK, player.y + 0.5*BLOCK}
-    end
+    local x = joystick:getGamepadAxis('leftx')
+    local y = joystick:getGamepadAxis('lefty')
+    left = x < -0.8
+    right = x > 0.8
+    up = y < -0.8
+    down = y > 0.8
+    pathline = {player.x + x*player.w, player.y + y*0.5*player.h, player.x + x*0.5*player.w + 100*x, player.y + y*0.5*player.h + 100*y}
   else
     if playerIsMoving(LEFT) then
       player.velocity.x = math.max(-PLAYER_SPEED, player.velocity.x - (PLAYER_SPEED * .3))
@@ -348,7 +351,7 @@ function love.draw()
   proj.x, proj.y),
   0, 0)
 
-  -- drawJoystickDebug()
+  drawJoystickDebug()
 
 end
 

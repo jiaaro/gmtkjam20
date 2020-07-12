@@ -31,7 +31,7 @@ function drawJoystickDebug()
     button count: %s
     device info: %s, %s, %s
 
-    left stick: %0.2f, %0.2f
+    left stick: %0.2f, %0.2f, sum: %0.2f
     right stick: %0.2f, %0.2f
     triggers: %0.2f <--> %0.2f
 
@@ -59,7 +59,7 @@ function drawJoystickDebug()
       joystick:getAxisCount(),
       joystick:getButtonCount(),
       vendorID, productID, productVersion,
-      joystick:getGamepadAxis("leftx"), joystick:getGamepadAxis("lefty"),
+      joystick:getGamepadAxis("leftx"), joystick:getGamepadAxis("lefty"), joystick:getGamepadAxis("leftx") + joystick:getGamepadAxis("lefty"),
       joystick:getGamepadAxis("rightx"), joystick:getGamepadAxis("righty"),
       joystick:getGamepadAxis("triggerleft"), joystick:getGamepadAxis("triggerright"),
       joystick:isDown(1), -- x
