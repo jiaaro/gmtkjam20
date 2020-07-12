@@ -160,7 +160,11 @@ local function playerFilter(playeritem, other)
 end
 
 function love.update(dt)
-  local _, _, currentlyTouching, ctlen = world:check(player, player.x - player.renderoffsetx, player.renderoffsety + player.velocity.y, playerFilter)
+  -- hack to move hitbox (corresponding correction at end of update for render stage)
+  player.x = player.x - player.renderoffsetx
+  player.y = player.y - player.renderoffsety
+
+  local _, _, currentlyTouching, ctlen = world:check(player, player.x, player.y, playerFilter)
   local touchingLadder = false
   for i = 1, ctlen do
     local layer = currentlyTouching[i].other.layer
@@ -208,12 +212,10 @@ function love.update(dt)
 
   player.x, player.y, cols, len = world:move(
       player,
-      lume.clamp(lume.round(player.x - player.renderoffsetx + player.velocity.x * dt), 0, map_width - player.w),
-      lume.clamp(lume.round(player.y - player.renderoffsety + player.velocity.y * dt), -8 * BLOCK, map_height - player.h),
+      lume.clamp(lume.round(player.x + player.velocity.x * dt), 0, map_width - player.w),
+      lume.clamp(lume.round(player.y + player.velocity.y * dt), -8 * BLOCK, map_height - player.h),
       playerFilter
   )
-  player.x = player.renderoffsetx + player.x
-  player.y = player.renderoffsety + player.y
 
   for i = 1, len do
     if cols[i].type == 'slide' and cols[i].touch.y > 0 then
@@ -280,6 +282,9 @@ function love.update(dt)
     animation.currentTime = animation.currentTime - animation.duration
   end
 
+  -- hack to move hitbox (see top of love.update)
+  player.x = player.renderoffsetx + player.x
+  player.y = player.renderoffsety + player.y
 end
 
 function love.gamepadpressed(js, button)
