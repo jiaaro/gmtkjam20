@@ -92,8 +92,11 @@ function getMapLayerByName(object_name)
 end
 
 function love.load()
+  -- time in level
+  t = 0
 
   lg.setDefaultFilter('nearest', 'nearest')
+  youdiedfont = lg.newFont(54, 'mono')
 
   windowWidth  = lg.getWidth()
 	windowHeight = lg.getHeight()
@@ -116,6 +119,7 @@ function love.load()
   -- Prepare physics world with horizontal and vertical gravity
 	world = bump.newWorld(2 * BLOCK)
   player = getMapLayerByName('Player')
+  player.is_dead = false
   player.speed = PLAYER_SPEED
   player.jump_height = JUMP_HEIGHT
   player.direction = 0
@@ -159,7 +163,11 @@ local function playerFilter(playeritem, other)
   return (other.layer and other.layer.properties.collision) or 'slide'
 end
 
+
 function love.update(dt)
+  -- total game time
+  t = t + dt
+
   -- hack to move hitbox (corresponding correction at end of update for render stage)
   player.x = player.x - player.renderoffsetx
   player.y = player.y - player.renderoffsety
@@ -173,6 +181,9 @@ function love.update(dt)
       player.velocity.x = 0
       player.velocity.y = math.max(0, player.velocity.y * .1)
       player.can_jump = true
+    elseif not player.is_dead and currentlyTouching[i].overlaps and layer and layer.name == 'hazards' then
+      player.is_dead = true
+      player.death_time = t
     end
   end
 
@@ -381,6 +392,14 @@ function love.draw()
   0, 0)
 
   -- drawJoystickDebug()
+  if player.is_dead then
+    lg.printf(
+        "YOU DIED",
+        youdiedfont,
+        0, windowHeight * .25,
+        windowWidth, 'center'
+    )
+  end
 
 end
 
