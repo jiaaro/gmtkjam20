@@ -100,9 +100,9 @@ function love.load()
   end
 
   player.w = 8
-  player.h = 2*BLOCK
+  player.h = 2*BLOCK -3
   player.renderoffsetx = -2
-  player.renderoffsety = 0
+  player.renderoffsety = -3
   world:add(player, 2*BLOCK, 0, player.w, player.h)
 
   -- add bullets to map
@@ -143,8 +143,11 @@ function love.update(dt)
   local touchingLadder = false
   for i = 1, ctlen do
     local layer = currentlyTouching[i].other.layer
-    if layer and layer.name == 'ladder' then
+    if currentlyTouching[i].overlaps and layer and layer.name == 'ladder' then
       touchingLadder = true
+      player.velocity.x = 0
+      player.velocity.y = math.max(0, player.velocity.y * .1)
+      player.can_jump = true
     end
   end
 
@@ -167,6 +170,9 @@ function love.update(dt)
     elseif playerIsMoving(UP) then
       if touchingLadder then
         player.velocity.y = -PLAYER_ON_LADDER_SPEED
+        if joystick:isGamepadDown("a") then
+          player:jump()
+        end
       end
     elseif playerIsMoving(DOWN) then
       if touchingLadder then
@@ -195,9 +201,6 @@ function love.update(dt)
         player.velocity.y = 0
       end
       player.velocity.x = player.velocity.x * .7
-    elseif cols[i].other.layer and cols[i].other.layer.name == 'ladder' then
-      player.velocity.x = player.velocity.x * .2
-      player.velocity.y = player.velocity.y * .2
     end
   end
 
