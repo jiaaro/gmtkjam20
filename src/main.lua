@@ -92,7 +92,7 @@ function getMapLayerByName(object_name)
 	end
 end
 
-function love.load()
+function love.load(args)
   -- time in level
   t = 0
 
@@ -102,9 +102,11 @@ function love.load()
   windowWidth  = lg.getWidth()
 	windowHeight = lg.getHeight()
 
-  local dbg = require('emmy_core')
-  dbg.tcpListen('localhost', 9966)
-  --dbg.waitIDE()
+  if args and args[#args] == '-debug' then
+    local dbg = require('emmy_core')
+    dbg.tcpListen('localhost', 9966)
+    --dbg.waitIDE()
+  end
 
   joysticks = love.joystick.getJoysticks()
   joystick = joysticks[1]

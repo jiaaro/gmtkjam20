@@ -1,0 +1,29 @@
+name = "wildmagic"
+default_targets = ["win32", "win64", "macos"]
+#default_targets = ["macos"]
+build_directory = "../makelove-build"
+
+love_files = [
+    "./*.lua",
+    "./assets/*",
+]
+
+[windows]
+
+[windows.exe_metadata]
+CompanyName = "Niv-Mizzet's Hangout"
+LegalCopyright = "©2020 Niv-Mizzet's Hangout"
+FileVersion = "1.0"
+
+[macos]
+
+[macos.app_metadata]
+CFBundleIdentifier = "com.jiaaro.nmh"
+NSHumanReadableCopyright = "©2020 Niv-Mizzet's Hangout"
+CFBundleShortVersionString = "1.0"
+
+[hooks]
+postbuild = [
+	# {build_directory} and {version} will be replaced
+	"cd {build_directory} && ../postbuild.sh",
+]
