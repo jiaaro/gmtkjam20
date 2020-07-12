@@ -52,31 +52,16 @@ function playerIsMoving(dir)
 end
 
 function getInputVector()
-  local pathline = false
+  local x = joystick:getGamepadAxis('leftx')
+  local y = joystick:getGamepadAxis('lefty')
+  if x > 0.1 or x < -0.1 and y >0.1 or y < -0.1 then
+    return {x = x, y = y}
+  end
+
   left = playerIsMoving(LEFT) and -1 or 0
   right = playerIsMoving(RIGHT) and 1 or 0
   up = playerIsMoving(UP) and -1 or 0
   down = playerIsMoving(DOWN) and 1 or 0
-  if left+right == 0 and up+down == 0 then
-    -- using analog stick
-    local x = joystick:getGamepadAxis('leftx')
-    local y = joystick:getGamepadAxis('lefty')
-    if x < -0.4 then
-      left = -1
-      if x < -0.75 and y > -0.75 then
-        up = -1
-      elseif x > -0.75 and y < 0.75 then
-        down = 1
-      end
-    elseif x > 0.4 then
-      right = 1
-      if x < 0.75 and y > -0.75 then
-        up = -1
-      elseif x > 0.75 and y > 0.75 then
-        down = 1
-      end
-    end
-  end
   return {x = left+right, y = up+down}
 end
 
@@ -323,11 +308,6 @@ function love.gamepadpressed(js, button)
   if button == 'a' then
     player:jump()
   end
-
-  -- if button == 'x' then
-  --   player.isShooting = true
-  -- end
-
 end
 
 function love.keypressed(key)
