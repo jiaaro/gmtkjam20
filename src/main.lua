@@ -3,6 +3,7 @@ anim8 = require('anim8')
 sti = require('sti')
 bump = require('bump')
 lume = require("lume")
+sprites = require('sprites')
 
 projectile = require('projectile')
 gun = require('gun')
