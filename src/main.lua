@@ -168,7 +168,7 @@ function love.update(dt)
     end
   end
 
-  if joystick and (joystick:isDown(BUTTON.SQUARE) or love.keyboard.isDown('j')) then
+  if joystick and joystick:isDown(BUTTON.SQUARE) or love.keyboard.isDown('j') then
     movementVector = getInputVector()
     pathline = {player.x + 0.5*player.w, player.y + 0.5*player.h, player.x + 0.5*player.w + 100*(movementVector.x), player.y + 0.5*player.h + 100*(movementVector.y)}
   else
@@ -366,7 +366,7 @@ function love.draw()
   proj.x, proj.y),
   0, 0)
 
-  drawJoystickDebug()
+  -- drawJoystickDebug()
 
 end
 
