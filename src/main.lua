@@ -258,12 +258,23 @@ function love.update(dt)
 
   -- bullet update
   if gun.state == FIRING then
-    proj:start(player.x, player.y, 200*movementVector.x, 200*movementVector.y)
+    local arrow_size = 5
+    local x = 0
+    print(player.direction)
+    if player.direction < 0 then
+      x = player.x - arrow_size
+    else
+      x = player.x + player.w
+    end
+    movementVector = getInputVector()
+    print(movementVector.x, movementVector.y)
+    proj:start(x, player.y + 0.75*player.h, 200*movementVector.x, 200*movementVector.y)
     gun.state = RESOLVING
   end
   if proj.active then
     proj:update(dt)
   end
+  gun:update(dt)
 
 
   map:update(dt)
@@ -381,6 +392,8 @@ function love.draw()
     local sprite_num = math.floor(animation.currentTime / animation.duration * #animation.quads) + 1
     lg.draw(animation.spriteSheet, animation.quads[sprite_num])
   lg.pop()
+
+    gun:draw()
 
   -- debugging
   if DEBUG then

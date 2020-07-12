@@ -1,4 +1,5 @@
 local Object = require("classic")
+local lg = love.graphics
 Gun = Object.extend(Object)
 
 -- states
@@ -25,14 +26,27 @@ function Gun:new()
 end
 
 function Gun:getNext()
-  print(self.arrows)
-  print(self.arrows[1])
   return self.arrows[GUN_TYPE.BASIC]
 end
 
-function Gun:draw()
-
+function Gun:update(dt)
+  if self.state == RESOLVING then
+    self.cooldown = 1
+    self.state = COOLDOWN
+  end
+  if self.state == COOLDOWN then
+    self.cooldown = self.cooldown - dt
+    if self.cooldown <= 0 then
+      self.state = READY
+    end
+  end
 end
 
+function Gun:draw()
+  if self.state == READY then
+    lg.setColor(0, 169, 0, 1)
+    lg.rectangle("fill", 20, 20, 10, 10)
+  end
+end
 
 return Gun

@@ -1,6 +1,5 @@
 local Object = require("classic")
 Projectile = Object.extend(Object)
-
 local lg = love.graphics
 
 local offscreen = {x = -69, y = -69}
@@ -18,11 +17,12 @@ function Projectile:new(x, y, w, h, gun_type)
   self.velocity = {x = 0, y = 0}
   self.cols = {}
   self.ttl = 0
-  world:add(self, 0, 0, 5, 5)
+  world:add(self, 0, 0, 1, 1)
 end
 
 function Projectile:update(dt)
   if self.active and self.ttl > 0 then
+    print(self.velocity.x, self.velocity.y)
     self.x, self.y, self.cols = world:move(
       self,
       self.x + self.velocity.x * dt,
@@ -41,14 +41,11 @@ end
 function Projectile:draw()
   if self.active then
     lg.setColor(1, 1, 1, 0.9)
-    lg.circle('fill', self.x, self.y, 6)
+    lg.circle('fill', self.x, self.y, 3)
   end
 end
 
 function Projectile:start(startX, startY, velocityX, velocityY)
-  if self.active then
-    return
-  end
   world:update(self, startX, startY)
   self.x = startX
   self.y = startY
