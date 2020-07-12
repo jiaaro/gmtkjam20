@@ -17,8 +17,8 @@ GUN_TYPE = {
 
 function Gun:new()
   self.arrows = {
-    [GUN_TYPE.BASIC] = Projectile(-69, -69, 0, 0),
-    [GUN_TYPE.REVERS] = Projectile(-69, -69, 0, 0)
+    [GUN_TYPE.BASIC] = Projectile(-69, -69),
+    [GUN_TYPE.BAT] = Projectile(-69, -69, GUN_TYPE.BAT)
   }
   self.state = READY
   self.currentArrow = GUN_TYPE.BASIC
@@ -26,7 +26,7 @@ function Gun:new()
 end
 
 function Gun:getNext()
-  return self.arrows[GUN_TYPE.BASIC]
+  return self.arrows[GUN_TYPE.BAT]
 end
 
 function Gun:update(dt)

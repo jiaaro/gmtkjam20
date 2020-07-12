@@ -121,6 +121,7 @@ function love.load(args)
   player.x = 2*BLOCK
   player.y = 2*BLOCK
 
+  local proj = {x = 0, y = 0, active = false}
   gun = Gun()
   function player:draw()
     local x, y
@@ -202,6 +203,9 @@ function love.update(dt)
       player.death_time = t
       return
     end
+    if cols[i].other.gun_type == GUN_TYPE.BAT  then
+      moving_platform_vel = cols[i].other.velocity
+    end
   end
 
   if joystick and (joystick:isDown(BUTTON.SQUARE) or love.keyboard.isDown('j')) and (gun.state == READY or gun.state == AIMING) then
@@ -239,6 +243,12 @@ function love.update(dt)
     player.velocity.y = player.velocity.y + PX_PER_METER
   end
 
+  if moving_platform_vel then
+    print(player.velocity.x)
+    player.velocity.x = player.velocity.x + moving_platform_vel.x
+    print(player.velocity.x)
+  end
+
   player.x, player.y, cols, len = world:move(
       player,
       lume.clamp(lume.round(player.x + player.velocity.x * dt), 0, map_width - player.w),
@@ -270,20 +280,19 @@ function love.update(dt)
 
   -- bullet update
   if gun.state == FIRING then
+    print(proj.gun_type)
     local arrow_size = 5
     local x = 0
-    print(player.direction)
     if player.direction < 0 then
       x = player.x - arrow_size
     else
       x = player.x + player.w
     end
     movementVector = getInputVector()
-    print(movementVector.x, movementVector.y)
-    proj:start(x, player.y + 0.75*player.h, 200*movementVector.x, 200*movementVector.y)
+    proj:start(x, player.y + 0.25*player.h - proj.h)
     gun.state = RESOLVING
   end
-  if proj.active then
+  if proj and proj.active and world:hasItem(proj) then
     proj:update(dt)
   end
   gun:update(dt)
