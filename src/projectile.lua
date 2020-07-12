@@ -5,7 +5,11 @@ local lg = love.graphics
 
 local offscreen = {x = -69, y = -69}
 
-function Projectile:new(x, y, w, h)
+function Projectile:new(x, y, w, h, gun_type)
+  if gun_type == nil then
+    self.gun_type = GUN_TYPE.BASIC
+  end
+  self.collision_type = "cross"
   self.x = x
   self.y = y
   self.w = w

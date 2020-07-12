@@ -7,7 +7,7 @@ sprites = require('sprites')
 hexcolor = require('hexcolor')
 
 projectile = require('projectile')
-gun = require('gun')
+Gun = require('gun')
 
 DEBUG = false
 
@@ -28,7 +28,7 @@ BLOCK = 8 -- pixels
 
 local lg = love.graphics
 local animation = nil
-local proj = nil
+local proj = {x = 0, y = 0, active = false}
 
 movementVector = {x = 0, y = 0}
 local keyboard_controls_map = {
@@ -119,6 +119,8 @@ function love.load(args)
   player.velocity = {x=0, y=0}
   player.can_jump = true
 
+  gun = Gun()
+
   function player:jump()
     if DEATH_POSSIBLE and player.is_dead and t - player.death_time > MIN_DEAD_TIME then
       love.load()
@@ -137,12 +139,10 @@ function love.load(args)
   player.renderoffsetx = -2
   player.renderoffsety = -3
   world:add(player, 2*BLOCK, 0, player.w, player.h)
+  gun.state = READY
 
   -- Prepare collision objects
 	map:bump_init(world)
-
-  gun.state = READY
-  proj = Projectile(0, 0, 0, 0)
 
   bat_image = lg.newImage("assets/images/animations/noBKG_BatFlight_strip.png")
   animation = {
@@ -158,6 +158,9 @@ function love.load(args)
 end
 
 local function playerFilter(playeritem, other)
+  if other.collision_type then
+    return other.collision_type
+  end
   return (other.layer and other.layer.properties.collision) or 'slide'
 end
 
@@ -191,6 +194,7 @@ function love.update(dt)
 
   if joystick and (joystick:isDown(BUTTON.SQUARE) or love.keyboard.isDown('j')) and (gun.state == READY or gun.state == AIMING) then
     gun.state = AIMING
+    proj = gun:getNext()
     movementVector = getInputVector()
     pathline = {player.x + 0.5*player.w, player.y + 0.5*player.h, player.x + 0.5*player.w + 100*(movementVector.x), player.y + 0.5*player.h + 100*(movementVector.y)}
   else
@@ -257,7 +261,9 @@ function love.update(dt)
     proj:start(player.x, player.y, 200*movementVector.x, 200*movementVector.y)
     gun.state = RESOLVING
   end
-  proj:update(dt)
+  if proj.active then
+    proj:update(dt)
+  end
 
 
   map:update(dt)
@@ -367,7 +373,7 @@ function love.draw()
       lg.circle('fill', pathline[3], pathline[4], 40)
     end
 
-    if proj then
+    if proj.active then
       proj:draw()
     end
 
