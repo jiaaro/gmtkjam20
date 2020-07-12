@@ -4,9 +4,12 @@ sti = require('sti')
 bump = require('bump')
 lume = require("lume")
 sprites = require('sprites')
+hexcolor = require('hexcolor')
 
 projectile = require('projectile')
 gun = require('gun')
+
+DEBUG = false
 
 PX_PER_METER = 16
 PLAYER_SPEED = 8 * PX_PER_METER
@@ -103,6 +106,7 @@ function love.load(args)
 	windowHeight = lg.getHeight()
 
   if args and args[#args] == '-debug' then
+    DEBUG = true
     local dbg = require('emmy_core')
     dbg.tcpListen('localhost', 9966)
     --dbg.waitIDE()
@@ -389,22 +393,25 @@ function love.draw()
   lg.pop()
 
   -- debugging
-  lg.setColor(1, 1, 1)
-  local x,y,w,h = world:getRect(player)
-  lg.print(string.format([[
+  if DEBUG then
+    lg.setColor(1, 1, 1)
+    local x,y,w,h = world:getRect(player)
+    lg.print(string.format([[
     player: (%0.2f, %0.2f)
     player vel: (%0.2f, %0.2f)
     player rect: (%0.2f, %0.2f) - %0.2f x %0.2f
     proj: (%0.2f, %0.2f)
   ]],
-  player.x, player.y,
-  player.velocity.x, player.velocity.y,
-  x, y, w, h,
-  proj.x, proj.y),
-  0, 0)
+        player.x, player.y,
+        player.velocity.x, player.velocity.y,
+        x, y, w, h,
+        proj.x, proj.y),
+        0, 0)
+  end
 
   -- drawJoystickDebug()
   if player.is_dead then
+    lg.setColor(unpack(hexcolor("f9d68f")))
     local message = "YOU DIED"
     if t - player.death_time > MIN_DEAD_TIME then
       message = 'continue?'
