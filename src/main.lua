@@ -16,6 +16,7 @@ PLAYER_SPEED = 8 * PX_PER_METER
 PLAYER_ON_LADDER_SPEED = 4 * PX_PER_METER
 JUMP_HEIGHT = 20 * PX_PER_METER
 MIN_DEAD_TIME = 1 -- seconds
+DEATH_POSSIBLE = true
 
 camera = {
   zoom = 1,
@@ -134,7 +135,7 @@ function love.load(args)
   player.can_jump = true
 
   function player:jump()
-    if player.is_dead and t - player.death_time > MIN_DEAD_TIME then
+    if DEATH_POSSIBLE and player.is_dead and t - player.death_time > MIN_DEAD_TIME then
       love.load()
       return
     end
@@ -179,7 +180,7 @@ end
 function love.update(dt)
   -- total game time
   t = t + dt
-  if player.is_dead then
+  if DEATH_POSSIBLE and player.is_dead then
     return
   end
 
@@ -199,6 +200,7 @@ function love.update(dt)
     elseif not player.is_dead and currentlyTouching[i].overlaps and layer and layer.name == 'hazards' then
       player.is_dead = true
       player.death_time = t
+      return
     end
   end
 
@@ -341,6 +343,8 @@ function love.keypressed(key)
     player:jump()
   elseif key == 'right' then
   elseif key == 'left' then
+  elseif DEBUG and cmd and key == 'd' then
+    DEATH_POSSIBLE = not DEATH_POSSIBLE
   elseif love.keyboard.isDown("lshift", 'rshift') and cmd and key == 'r' then
     player.is_dead = false
     player.death_time = nil
