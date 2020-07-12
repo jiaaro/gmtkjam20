@@ -31,12 +31,16 @@ local keyboard_controls_map = {
 }
 local gamePadAxis_map = {
   [LEFT] = {'leftx', -0.1},
-  [RIGHT] = {'rightx', 0.1},
+  [RIGHT] = {'leftx', 0.1},
   [UP] = {'lefty', 0.1},
   [DOWN] = {'lefty', -0.1}
 }
 function playerIsMoving(dir)
-  return joystick and (joystick:isDown(dir) or joystick:getGamepadAxis(gamePadAxis_map[dir][1]) < gamePadAxis_map[dir][2]) or love.keyboard.isDown(keyboard_controls_map[dir][1], keyboard_controls_map[dir][2])
+  if dir == LEFT or dir == DOWN then
+    return joystick and (joystick:isDown(dir) or joystick:getGamepadAxis(gamePadAxis_map[dir][1]) < gamePadAxis_map[dir][2]) or love.keyboard.isDown(keyboard_controls_map[dir][1], keyboard_controls_map[dir][2])
+  else
+    return joystick and (joystick:isDown(dir) or joystick:getGamepadAxis(gamePadAxis_map[dir][1]) > gamePadAxis_map[dir][2]) or love.keyboard.isDown(keyboard_controls_map[dir][1], keyboard_controls_map[dir][2])
+  end
 end
 
 function getMapObjectByName(object_name)
