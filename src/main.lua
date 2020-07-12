@@ -95,7 +95,7 @@ function love.load(args)
     DEBUG = true
     local dbg = require('emmy_core')
     dbg.tcpListen('localhost', 9966)
-    --dbg.waitIDE()
+    dbg.waitIDE()
   end
 
   joysticks = love.joystick.getJoysticks()
@@ -168,6 +168,31 @@ function love.load(args)
     currentTime = 0
   }
 
+  if DEBUG then
+    player.x, player.y = 450, 411
+    world:update(player, player.x, player.y)
+  end
+
+  function map.layers.skeletons:update(dt)
+    local x, y
+    for _, obj in ipairs(self.objects) do
+      x, y = self.x + obj.x, self.y + obj.y
+      world:update(obj, x, y)
+    end
+  end
+  function map.layers.skeletons:draw()
+    local x, y
+    for _, obj in ipairs(self.objects) do
+      x, y = self.x + obj.x, self.y + obj.y
+      --lg.rectangle('fill', x, y, obj.width, obj.height)
+      sprites.skeleton:draw(x, y)
+    end
+  end
+  for _, obj in ipairs(map.layers.skeletons.objects) do
+    obj.collision_type = 'cross'
+    world:add(obj, obj.x, obj.y, obj.width, obj.height)
+  end
+
   for x = 0, bat_image:getWidth() - 64, 64 do
       table.insert(animation.quads, lg.newQuad(x, 0, 64, 64, bat_image:getDimensions()))
   end
@@ -188,6 +213,8 @@ function love.update(dt)
     return
   end
 
+  map.layers.skeletons.x = math.sin(t) * BLOCK * 3
+
   local _, _, currentlyTouching, ctlen = world:check(player, player.x, player.y, playerFilter)
   local touchingLadder = false
   for i = 1, ctlen do
@@ -198,6 +225,10 @@ function love.update(dt)
       player.velocity.y = math.max(0, player.velocity.y * .1)
       player.can_jump = true
     elseif not player.is_dead and currentlyTouching[i].overlaps and layer and layer.name == 'hazards' then
+      player.is_dead = true
+      player.death_time = t
+      return
+    elseif not player.is_dead and currentlyTouching[i].overlaps and layer and layer.properties.object_type == 'enemy' then
       player.is_dead = true
       player.death_time = t
       return
