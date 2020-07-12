@@ -11,5 +11,10 @@ pushd macos
 popd
 
 for channel in *; do
-  butler push ${channel}/wildmagic-${channel}.zip jiaaro/wildmagic:${channel}
+  fname="wildmagic-${channel}.zip"
+
+  if [[ "$channel" == "love" ]]; then
+    fname="wildmagic.love"
+  fi
+  butler push ${channel}/${fname} jiaaro/wildmagic:${channel}
 done
