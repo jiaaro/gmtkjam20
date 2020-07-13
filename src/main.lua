@@ -415,7 +415,7 @@ function love.draw()
     lg.scale(camera.scale)
     lg.translate(-camera.x, -camera.y)
 
-    if vel_lines then
+    if DEBUG and vel_lines then
       lg.setColor(1, 0, 0, 0.3)
       lg.line(player.x, player.y, player.x + player.velocity.x, player.y)
       lg.setColor(0, 1, 0, 0.3)
@@ -424,7 +424,7 @@ function love.draw()
       lg.line(player.x, player.y, player.x + player.velocity.x, player.y + player.velocity.y)
     end
 
-    if pathline then
+    if DEBUG and pathline then
       lg.setColor(255, 255, 51, 0.8)
       lg.line(pathline[1], pathline[2], pathline[3], pathline[4])
       lg.setColor(0, 0, 1, 0.4)
