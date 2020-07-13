@@ -44,8 +44,8 @@ end
 
 function Gun:draw()
   if self.state == READY then
-    lg.setColor(0, 169, 0, 1)
-    lg.rectangle("fill", 20, 20, 10, 10)
+    -- lg.setColor(0, 169, 0, 1)
+    -- lg.rectangle("fill", 20, 20, 10, 10)
   end
 end
 

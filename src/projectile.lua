@@ -56,8 +56,10 @@ end
 
 function Projectile:draw()
   if self.active then
-    lg.setColor(1, 1, 1, 0.9)
-    lg.circle('fill', self.x, self.y, self.w)
+    lg.setColor(1, 1, 1, 1)
+    -- lg.circle('fill', self.x, self.y, self.w)
+    -- local sprite_num = math.floor(animation.currentTime / animation.duration * #animation.quads) + 1
+    -- lg.draw(animation.spriteSheet, animation.quads[sprite_num])
   end
 end
 

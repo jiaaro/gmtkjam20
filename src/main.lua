@@ -27,7 +27,7 @@ camera = {
 BLOCK = 8 -- pixels
 
 local lg = love.graphics
-local animation = nil
+animation = nil
 local proj = {x = 0, y = 0, active = false}
 
 movementVector = {x = 0, y = 0}
@@ -311,7 +311,6 @@ function love.update(dt)
 
   -- bullet update
   if gun.state == FIRING then
-    print(proj.gun_type)
     local arrow_size = 5
     local x = 0
     if player.direction < 0 then
@@ -438,7 +437,7 @@ function love.draw()
 
     -- draw bat animation
     local sprite_num = math.floor(animation.currentTime / animation.duration * #animation.quads) + 1
-    lg.draw(animation.spriteSheet, animation.quads[sprite_num])
+    lg.draw(animation.spriteSheet, animation.quads[sprite_num], proj.x - 25, proj.y -30)
   lg.pop()
 
     gun:draw()
