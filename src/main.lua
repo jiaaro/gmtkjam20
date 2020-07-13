@@ -86,7 +86,7 @@ function love.load(args)
   t = 0
 
   lg.setDefaultFilter('nearest', 'nearest')
-  youdiedfont = lg.newFont(54, 'mono')
+  youdiedfont = lg.newFont(54, 'mono', .25)
 
   windowWidth  = lg.getWidth()
 	windowHeight = lg.getHeight()
