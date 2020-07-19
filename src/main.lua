@@ -258,7 +258,7 @@ function love.update(dt)
     elseif playerIsMoving(UP) then
       if touchingLadder then
         player.velocity.y = -PLAYER_ON_LADDER_SPEED
-        if joystick:isGamepadDown("a") then
+        if joystick and joystick:isGamepadDown("a") then
           player:jump()
         end
       end
