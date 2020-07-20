@@ -14,7 +14,7 @@ DEBUG = false
 PX_PER_METER = 16
 PLAYER_SPEED = 8 * PX_PER_METER
 PLAYER_ON_LADDER_SPEED = 4 * PX_PER_METER
-JUMP_HEIGHT = 20 * PX_PER_METER
+JUMP_HEIGHT = 28 * PX_PER_METER
 MIN_DEAD_TIME = 1 -- seconds
 DEATH_POSSIBLE = true
 
@@ -52,10 +52,12 @@ function playerIsMoving(dir)
 end
 
 function getInputVector()
-  local x = joystick:getGamepadAxis('leftx')
-  local y = joystick:getGamepadAxis('lefty')
-  if x > 0.1 or x < -0.1 and y >0.1 or y < -0.1 then
-    return {x = x, y = y}
+  if joystick then
+    local x = joystick:getGamepadAxis('leftx')
+    local y = joystick:getGamepadAxis('lefty')
+    if x > 0.1 or x < -0.1 and y >0.1 or y < -0.1 then
+      return {x = x, y = y}
+    end
   end
 
   left = playerIsMoving(LEFT) and -1 or 0
@@ -95,7 +97,7 @@ function love.load(args)
     DEBUG = true
     local dbg = require('emmy_core')
     dbg.tcpListen('localhost', 9966)
-    dbg.waitIDE()
+    --dbg.waitIDE()
   end
 
   joysticks = love.joystick.getJoysticks()
@@ -216,6 +218,10 @@ function love.update(dt)
 
   map.layers.skeletons.x = math.sin(t) * BLOCK * 3
 
+  if love.keyboard.isDown('l') then
+    local asdf = 1
+  end
+
   local _, _, currentlyTouching, ctlen = world:check(player, player.x, player.y, playerFilter)
   local touchingLadder = false
   for i = 1, ctlen do
@@ -234,12 +240,9 @@ function love.update(dt)
       player.death_time = t
       return
     end
-    if cols[i].other.gun_type == GUN_TYPE.BAT  then
-      moving_platform_vel = cols[i].other.velocity
-    end
   end
 
-  if joystick and (joystick:isDown(BUTTON.SQUARE) or love.keyboard.isDown('j')) and (gun.state == READY or gun.state == AIMING) then
+  if ((joystick and joystick:isDown(BUTTON.SQUARE)) or love.keyboard.isDown('j')) and (gun.state == READY or gun.state == AIMING) then
     gun.state = AIMING
     proj = gun:getNext()
     movementVector = getInputVector()
@@ -274,35 +277,54 @@ function love.update(dt)
     player.velocity.y = player.velocity.y + (PX_PER_METER * 60 * dt)
   end
 
-  player.x, player.y, cols, len = world:move(
+  local playerx, playery = world:getRect(player)
+  playerx, playery, cols, len = world:move(
       player,
-      lume.clamp(lume.round(player.x + player.velocity.x * dt), 0, map_width - player.w),
-      lume.clamp(lume.round(player.y + player.velocity.y * dt), -8 * BLOCK, map_height - player.h),
+      lume.clamp(playerx + player.velocity.x * dt, 0, map_width - player.w),
+      lume.clamp(playery + player.velocity.y * dt, -8 * BLOCK, map_height - player.h),
       playerFilter
   )
 
+  if playerx == player.x then
+    player.velocity.x = 0
+  end
+
+  player.x = lume.round(playerx)
+  player.y = lume.round(playery)
+
+  local platform_vel = {x=0, y=0}
+  local player_inertia = {x=0.042^dt, y=0.042^dt}
+
   for i = 1, len do
-    if cols[i].type == 'slide' and cols[i].touch.y > 0 then
+    if cols[i].type == 'slide' then
       player.can_jump = true
       if player.velocity.y > 0 then
         player.velocity.y = 0
       end
-      player.velocity.x = player.velocity.x * .7
+    end
+
+    if cols[i].other.gun_type == GUN_TYPE.BAT  then
+      platform_vel = cols[i].other.velocity
+    end
+    if cols[i].type == 'slide' and cols[i].touch.y >= 0 then
+      player_inertia.x = (.65 ^ 60)^dt
     end
   end
 
-  local platform_vel = {x=0, y=0}
-  if moving_platform_vel then
-    platform_vel = moving_platform_vel
-    print(player.velocity.x)
-    player.velocity.x = player.velocity.x * (1 - dt) + moving_platform_vel.x * dt
-    print(player.velocity.x)
-  end
-  local player_inertia = 0.045^dt
-  local platform_interia_transfer = 1 - player_inertia
 
-  player.velocity.x = player.velocity.x * player_inertia + platform_vel.x * platform_interia_transfer
-  --player.velocity.y = player.velocity.y * player_inertia + platform_vel.y * platform_interia_transfer
+  local platform_intertia_transfer = {
+    x=1 - player_inertia.x,
+    y=1 - player_inertia.y,
+  }
+
+  player.velocity.x = (
+    player.velocity.x * player_inertia.x
+    + platform_vel.x * (1 - player_inertia.x)
+  )
+  player.velocity.y = (
+    player.velocity.y * player_inertia.y
+    + platform_vel.y * (1 - player_inertia.y)
+  )
 
   -- do parallax
   for i, layer in pairs(map.layers) do

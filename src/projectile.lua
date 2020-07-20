@@ -26,7 +26,7 @@ function Projectile:new(x, y, gun_type)
     self.w = 10
     self.h = 3
     self.ttl = 100
-    self.velocity = {x = 30, y = 0}
+    self.velocity = {x = 20, y = 0}
   end
   world:add(self, self.x, self.y, self.w, self.h)
 end
