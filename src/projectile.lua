@@ -23,12 +23,19 @@ function Projectile:new(x, y, gun_type)
     self.h = 1
   elseif gun_type == GUN_TYPE.BAT then
     self.collision_type = "slide"
-    self.w = 10
+    self.w = 24
     self.h = 3
     self.ttl = 100
-    self.velocity = {x = 20, y = 0}
+    self.velocity = {x = 8*BLOCK, y = 0}
   end
   world:add(self, self.x, self.y, self.w, self.h)
+end
+
+local function batProjectileFilter(item, other)
+  if other ~= player then
+    return 'cross'
+  end
+  return 'slide'
 end
 
 function Projectile:update(dt)
@@ -36,7 +43,8 @@ function Projectile:update(dt)
     self.x, self.y, self.cols = world:move(
       self,
       self.x + self.velocity.x * dt,
-      self.y + self.velocity.y * dt
+      self.y + self.velocity.y * dt,
+      batProjectileFilter
     )
     self.ttl = self.ttl - dt
     if #self.cols > 0 then

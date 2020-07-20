@@ -273,11 +273,13 @@ function love.update(dt)
     end
   end
 
-  if not touchingLadder then
-    player.velocity.y = player.velocity.y + (PX_PER_METER * 60 * dt)
-  end
-
   local playerx, playery = world:getRect(player)
+  local _, _, batcols, batcollen = world:check(
+      player,
+      lume.clamp(playerx + player.velocity.x * dt, 0, map_width - player.w),
+      lume.clamp(playery + (player.velocity.y + (PX_PER_METER * 60 * dt)) * dt, -8 * BLOCK, map_height - player.h),
+      playerFilter
+  )
   playerx, playery, cols, len = world:move(
       player,
       lume.clamp(playerx + player.velocity.x * dt, 0, map_width - player.w),
@@ -285,15 +287,24 @@ function love.update(dt)
       playerFilter
   )
 
-  if playerx == player.x then
+  if not touchingLadder then
+    player.velocity.y = player.velocity.y + (PX_PER_METER * 60 * dt)
+  end
+
+  if math.abs(player.velocity.x * dt) > 1 and lume.round(playerx) == lume.round(player.x) then
     player.velocity.x = 0
+  end
+
+  local player_inertia = {x=0.042^dt, y=0.042^dt}
+  local platform_vel = {x=0, y=0}
+  for i = 1, batcollen do
+    if batcols[i].other.gun_type == GUN_TYPE.BAT  then
+      platform_vel = batcols[i].other.velocity
+    end
   end
 
   player.x = lume.round(playerx)
   player.y = lume.round(playery)
-
-  local platform_vel = {x=0, y=0}
-  local player_inertia = {x=0.042^dt, y=0.042^dt}
 
   for i = 1, len do
     if cols[i].type == 'slide' then
@@ -303,14 +314,10 @@ function love.update(dt)
       end
     end
 
-    if cols[i].other.gun_type == GUN_TYPE.BAT  then
-      platform_vel = cols[i].other.velocity
-    end
-    if cols[i].type == 'slide' and cols[i].touch.y >= 0 then
+    if cols[i].type == 'slide' then
       player_inertia.x = (.65 ^ 60)^dt
     end
   end
-
 
   local platform_intertia_transfer = {
     x=1 - player_inertia.x,
