@@ -271,13 +271,7 @@ function love.update(dt)
   end
 
   if not touchingLadder then
-    player.velocity.y = player.velocity.y + PX_PER_METER
-  end
-
-  if moving_platform_vel then
-    print(player.velocity.x)
-    player.velocity.x = player.velocity.x + moving_platform_vel.x
-    print(player.velocity.x)
+    player.velocity.y = player.velocity.y + (PX_PER_METER * 60 * dt)
   end
 
   player.x, player.y, cols, len = world:move(
@@ -297,7 +291,18 @@ function love.update(dt)
     end
   end
 
-  player.velocity.x = player.velocity.x * .95
+  local platform_vel = {x=0, y=0}
+  if moving_platform_vel then
+    platform_vel = moving_platform_vel
+    print(player.velocity.x)
+    player.velocity.x = player.velocity.x * (1 - dt) + moving_platform_vel.x * dt
+    print(player.velocity.x)
+  end
+  local player_inertia = 0.045^dt
+  local platform_interia_transfer = 1 - player_inertia
+
+  player.velocity.x = player.velocity.x * player_inertia + platform_vel.x * platform_interia_transfer
+  --player.velocity.y = player.velocity.y * player_inertia + platform_vel.y * platform_interia_transfer
 
   -- do parallax
   for i, layer in pairs(map.layers) do
